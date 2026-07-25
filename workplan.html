@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CSE499 — Neural Rover Slides</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+  .slider { max-width: 960px; width: 100%; position: relative; }
+
+  .slide { background: #1e293b; border-radius: 14px; padding: 40px 48px; min-height: 520px; display: none; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+  .slide.active { display: block; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; width: 100%; max-width: 960px; }
+  .nav button { background: #334155; border: none; color: #fff; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .nav button:hover { background: #475569; }
+  .nav button:disabled { opacity: 0.4; cursor: default; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #475569; cursor: pointer; }
+  .dot.active { background: #3b82f6; }
+
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 10px; margin-bottom: 12px; }
+  .tag-a { background: #1e40af; color: #93c5fd; }
+  .tag-b { background: #166534; color: #86efac; }
+
+  h1 { font-size: 28px; font-weight: 800; line-height: 1.2; }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .sub { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .info-box { background: #0f172a; border-radius: 10px; padding: 16px 18px; border-left: 3px solid #3b82f6; }
+  .info-box.green { border-left-color: #16a34a; }
+  .info-box .label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #64748b; font-weight: 600; }
+  .info-box .val { font-size: 14px; font-weight: 600; color: #f1f5f9; margin-top: 2px; }
+  .info-box .desc { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+
+  ul { list-style: none; margin: 12px 0; }
+  li { padding: 6px 0; font-size: 14px; color: #cbd5e1; padding-left: 20px; position: relative; }
+  li::before { content: '▸'; position: absolute; left: 0; color: #3b82f6; font-weight: 700; }
+
+  .img-placeholder { background: #0f172a; border-radius: 10px; padding: 24px; text-align: center; color: #64748b; font-size: 13px; margin: 12px 0; border: 1px dashed #334155; }
+
+  .center { text-align: center; }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .flex { display: flex; gap: 16px; }
+  .flex-1 { flex: 1; }
+  .gap-8 { gap: 8px; }
+
+  @media (max-width: 600px) {
+    .slide { padding: 24px 20px; min-height: 400px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .flex { flex-direction: column; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slider" id="slider">
+
+<!-- SLIDE 1 — Title -->
+<div class="slide active" data-index="0">
+  <div class="tag tag-a">CSE499A — Semester 1</div>
+  <h1>Neural Rover</h1>
+  <p class="sub" style="font-size:16px; font-weight:500; color:#cbd5e1;">AI-Powered Elderly Monitoring RC Car</p>
+  <div style="margin:20px 0; padding:16px 20px; background:#0f172a; border-radius:10px; border-left:3px solid #3b82f6;">
+    <p style="font-size:14px; color:#94a3b8; line-height:1.7;">
+      An RC car with ESP32-CAM streams video to a laptop. Next semester, GPU-powered AI detects faces and falls. A chatbot lets caregivers ask: <em style="color:#e2e8f0;">"Who hasn't been seen in 2 hours?"</em>
+    </p>
+  </div>
+  <div class="info-grid">
+    <div class="info-box"><div class="label">Semester</div><div class="val">CSE499A (Hardware)</div><div class="desc">Jul 9 — Aug 27, 2026 · 8 weeks</div></div>
+    <div class="info-box green"><div class="label">Next Semester</div><div class="val">CSE499B (Deep Learning)</div><div class="desc">InsightFace + YOLO-Pose + Chatbot</div></div>
+  </div>
+  <div style="margin-top:20px;">
+    <div style="display:flex; gap:20px; font-size:13px; color:#94a3b8;">
+      <span>👤 NSU · CSE499</span>
+      <span>📅 Progress every Thursday</span>
+      <span>💻 GPU: Intel Arc A770</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 — Week 1-2 -->
+<div class="slide" data-index="1">
+  <div class="tag tag-a">Weeks 1-2 · Jul 9 — Jul 16</div>
+  <h2>RC Car Build</h2>
+  <p class="sub">Assemble chassis, wire motors, get the car moving</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1" style="background:#0f172a; border-radius:10px; padding:16px;">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600; margin-bottom:8px;">Week 1 — Jul 9</div>
+      <div style="font-size:15px; font-weight:600; margin-bottom:6px;">Component Gathering</div>
+      <ul>
+        <li>Finalize parts list (motors, ESP32, battery, wheels)</li>
+        <li>Draw circuit diagram</li>
+        <li>Plan wiring layout</li>
+      </ul>
+    </div>
+    <div class="flex-1" style="background:#0f172a; border-radius:10px; padding:16px;">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600; margin-bottom:8px;">Week 2 — Jul 16</div>
+      <div style="font-size:15px; font-weight:600; margin-bottom:6px;">Chassis + Motor Wiring</div>
+      <ul>
+        <li>Assemble chassis, mount motors and wheels</li>
+        <li>Wire motor driver (L298N) to ESP32</li>
+        <li>Test basic motor movement</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: Car chassis built, motors spinning under ESP32 control
+  </div>
+</div>
+
+<!-- SLIDE 3 — Week 3 -->
+<div class="slide" data-index="2">
+  <div class="tag tag-a">Week 3 · Jul 23</div>
+  <h2>Phone Control Integration</h2>
+  <p class="sub">Drive the RC car from your phone</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1">
+      <ul>
+        <li>Connect phone app (BT or WiFi) to ESP32</li>
+        <li>Implement forward, reverse, and steering controls</li>
+        <li>Tune motor speed and turning radius</li>
+        <li>Test range and responsiveness</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: RC car drives forward/back and steers reliably via phone
+  </div>
+  <div style="margin-top:16px; background:#0f172a; border-radius:10px; padding:16px;">
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600; margin-bottom:6px;">Components Used</div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:13px; color:#94a3b8;">
+      <span>🔧 ESP32 Dev Board</span>
+      <span>⚙️ L298N Motor Driver</span>
+      <span>🔋 5V Power Bank</span>
+      <span>📱 Phone App</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 — Week 4 -->
+<div class="slide" data-index="3">
+  <div class="tag tag-a">Week 4 · Jul 30</div>
+  <h2>ESP32-CAM + Video Streaming</h2>
+  <p class="sub">Get live video from the rover to your laptop</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1">
+      <ul>
+        <li>Flash CameraWebServer firmware on ESP32-CAM</li>
+        <li>Connect to WiFi and get local IP address</li>
+        <li>Access live MJPEG stream from laptop browser</li>
+        <li>Verify stream stability and resolution (640x480)</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: Live video stream visible on laptop over WiFi
+  </div>
+  <div class="img-placeholder" style="margin-top:16px;">
+    📷 ESP32-CAM Stream Preview — http://192.168.x.x:81/stream
+  </div>
+</div>
+
+<!-- SLIDE 5 — Week 5 -->
+<div class="slide" data-index="4">
+  <div class="tag tag-a">Week 5 · Aug 6</div>
+  <h2>Pan-Tilt + Raised Camera Mount</h2>
+  <p class="sub">Get the camera to face-level height</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1">
+      <ul>
+        <li>Build ~80cm rigid stalk (PVC pipe or carbon fiber)</li>
+        <li>Mount pan-tilt servos at the top</li>
+        <li>Attach ESP32-CAM to pan-tilt head</li>
+        <li>Control tilt via PWM from ESP32 to aim at face level</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: Camera at ~80cm height, pan-tilt adjustable via PWM
+  </div>
+  <div class="img-placeholder" style="margin-top:16px;">
+    📐 Rover sketch: chassis → stalk → pan-tilt → ESP32-CAM
+  </div>
+</div>
+
+<!-- SLIDE 6 — Week 6 -->
+<div class="slide" data-index="5">
+  <div class="tag tag-a">Week 6 · Aug 13</div>
+  <h2>MQTT + Alert System</h2>
+  <p class="sub">Laptop detects → device reacts</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1">
+      <ul>
+        <li>Set up MQTT broker (HiveMQ Cloud free tier)</li>
+        <li>Python publisher: sends alert on detection</li>
+        <li>ESP32 subscriber: listens for incoming alerts</li>
+        <li>On alert: buzzer 3s + red LED ON + OLED shows "⚠ ALERT"</li>
+        <li>On clear: green LED + OLED shows "MONITORING..."</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: Python → MQTT → ESP32 → buzzer/LED/OLED working end-to-end
+  </div>
+</div>
+
+<!-- SLIDE 7 — Weeks 7-8 -->
+<div class="slide" data-index="6">
+  <div class="tag tag-a">Weeks 7-8 · Aug 20 — Aug 27</div>
+  <h2>Integration + Final Demo</h2>
+  <p class="sub">Put it all together and present</p>
+  <div class="flex mt-16" style="gap:16px;">
+    <div class="flex-1" style="background:#0f172a; border-radius:10px; padding:16px;">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600; margin-bottom:8px;">Week 7 — Aug 20</div>
+      <div style="font-size:15px; font-weight:600; margin-bottom:6px;">Integration Test</div>
+      <ul>
+        <li>Rover drives → streams video → receives alerts</li>
+        <li>Stress test: run for 1+ hour</li>
+        <li>Fix any wiring or connection issues</li>
+      </ul>
+    </div>
+    <div class="flex-1" style="background:#0f172a; border-radius:10px; padding:16px;">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600; margin-bottom:8px;">Week 8 — Aug 27</div>
+      <div style="font-size:15px; font-weight:600; margin-bottom:6px;">Final Demo + Report</div>
+      <ul>
+        <li>Live demo of complete hardware system</li>
+        <li>Submit 499A project report</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:10px 16px; background:#1e3a5f; border-radius:8px; font-size:13px; color:#93c5fd;">
+    ✅ Deliverable: Working hardware + demo + report
+  </div>
+</div>
+
+<!-- SLIDE 8 — 499B Preview -->
+<div class="slide" data-index="7">
+  <div class="tag tag-b">CSE499B — Next Semester</div>
+  <h2>Deep Learning Phase</h2>
+  <p class="sub">Run on desktop PC with Intel Arc A770 GPU</p>
+  <div class="info-grid">
+    <div class="info-box green"><div class="label">Module 1</div><div class="val">InsightFace</div><div class="desc">Face recognition: enroll residents, detect &amp; match in rover stream</div></div>
+    <div class="info-box green"><div class="label">Module 2</div><div class="val">YOLO-Pose</div><div class="desc">Fall &amp; posture detection — alert if resident is on the floor</div></div>
+    <div class="info-box green"><div class="label">Module 3</div><div class="val">Telegram Chatbot</div><div class="desc">Caregivers ask an LLM: "Who hasn't been seen in 2 hours?"</div></div>
+    <div class="info-box green"><div class="label">Module 4</div><div class="val">System Integration</div><div class="desc">Combine all modules into one complete elderly monitoring system</div></div>
+  </div>
+  <div style="margin-top:16px; background:#0f172a; border-radius:10px; padding:14px 18px;">
+    <div style="font-size:13px; color:#94a3b8;">
+      <strong style="color:#e2e8f0;">Flow:</strong> Rover patrols → Camera captures → GPU processes (face + pose) → Caregivers query via Telegram chatbot
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prevBtn" onclick="navSlide(-1)">← Previous</button>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn" onclick="navSlide(1)">Next →</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dots.appendChild(dot);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots.children[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots.children[current].classList.add('active');
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === slides.length - 1;
+  }
+
+  function navSlide(d) {
+    goTo(current + d);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navSlide(-1);
+  });
+</script>
+
+</body>
+</html>
