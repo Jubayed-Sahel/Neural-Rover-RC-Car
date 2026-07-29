@@ -25,6 +25,13 @@ const uint8_t R_IN3 = 21;
 const uint8_t R_IN4 = 19;
 const uint8_t R_ENB = 18;
 
+// Pan/tilt and ESP32-CAM UART pins from the master documentation.
+const uint8_t PAN_SERVO_PIN = 13;
+const uint8_t TILT_SERVO_PIN = 4;
+const uint8_t CAMERA_UART_RX = 16;  // ESP32-CAM U0T
+const uint8_t CAMERA_UART_TX = 17;  // ESP32-CAM U0R
+const uint32_t CAMERA_UART_BAUD = 115200;
+
 enum Motion : uint8_t {
   STOP = 0,
   FORWARD = 1,
@@ -44,9 +51,13 @@ const uint8_t MOTOR_FULL_DUTY = 255;
 const uint8_t MOTOR_RAMP_STEP = 12;
 const unsigned long MOTOR_RAMP_INTERVAL_MS = 12;
 const unsigned long DIRECTION_DEADTIME_MS = 40;
+const uint32_t SERVO_PWM_FREQUENCY = 50;
+const uint8_t SERVO_PWM_RESOLUTION = 16;
+const int SERVO_START_ANGLE = 90;
 
 AsyncWebServer server(80);
 AsyncWebSocket webSocket("/ws");
+HardwareSerial CameraSerial(2);
 
 volatile uint8_t requestedMotion = STOP;
 volatile unsigned long lastCommandMs = 0;
@@ -58,6 +69,14 @@ unsigned long lastRampMs = 0;
 bool directionChangePending = false;
 unsigned long lastWiFiRetryMs = 0;
 bool wasWiFiConnected = false;
+int panAngle = SERVO_START_ANGLE;
+int tiltAngle = SERVO_START_ANGLE;
+
+char cameraIp[16] = "";
+char cameraLine[96] = "";
+size_t cameraLineLength = 0;
+unsigned long lastCameraIpRequestMs = 0;
+portMUX_TYPE cameraIpMux = portMUX_INITIALIZER_UNLOCKED;
 
 const char CONTROL_PAGE[] PROGMEM = R"HTML(
 <!doctype html>
@@ -67,37 +86,62 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
   <title>ESP32 RC Car</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none}
+    html,body{margin:0;width:100%;min-height:100%;touch-action:manipulation}
     body{
-      display:grid;place-items:center;background:#0a101c;color:#fff;
+      display:flex;justify-content:center;background:#0a101c;color:#fff;
       font-family:Arial,sans-serif;user-select:none;-webkit-user-select:none
     }
-    main{width:min(390px,94vw);padding:18px}
-    h1{margin:0;text-align:center;font-size:28px}
-    #link{margin:7px 0 18px;text-align:center;color:#ff7373;font-weight:bold}
+    main{width:min(720px,100%);padding:12px 12px 24px}
+    h1{margin:2px 0 10px;text-align:center;font-size:26px}
+    .video{
+      position:relative;width:100%;aspect-ratio:4/3;background:#000;
+      border:2px solid #263d57;border-radius:16px;overflow:hidden
+    }
+    .video img{display:block;width:100%;height:100%;object-fit:contain}
+    #cameraLink{
+      position:absolute;top:9px;left:9px;padding:6px 9px;border-radius:18px;
+      background:#7b1d2c;color:#fff;font-size:11px;font-weight:900
+    }
+    #cameraLink.online{background:#12633e}
+    #link{margin:9px 0 11px;text-align:center;color:#ff7373;font-weight:bold}
     #link.online{color:#68edae}
     .pad{
+      width:min(410px,100%);margin:auto;
       display:grid;grid-template-columns:1fr 1fr 1fr;
       grid-template-areas:". f ." "l s r" ". b .";gap:12px
     }
     button{
-      height:90px;border:0;border-radius:18px;background:#263750;color:#fff;
+      height:72px;border:0;border-radius:18px;background:#263750;color:#fff;
       font-size:34px;font-weight:900;touch-action:none;box-shadow:0 6px 0 #040812
     }
     button.active{transform:translateY(6px);box-shadow:none;background:#168458}
     #f{grid-area:f}#l{grid-area:l}#r{grid-area:r}#b{grid-area:b}
     #s{grid-area:s;background:#b42331;font-size:15px}
     #status{
-      margin-top:17px;padding:11px;border-radius:12px;background:#111c2d;
+      width:min(410px,100%);margin:15px auto 0;padding:10px;
+      border-radius:12px;background:#111c2d;
       text-align:center;color:#72f1bc;font-size:18px;font-weight:bold
     }
+    .controls{
+      width:min(520px,100%);margin:13px auto 0;padding:12px;
+      border-radius:14px;background:#111c2d
+    }
+    .control-row{
+      display:grid;grid-template-columns:54px 1fr 42px;align-items:center;
+      gap:9px;margin:9px 0;font-size:12px;font-weight:900
+    }
+    input[type=range]{width:100%;accent-color:#29c387}
     .help{margin-top:12px;text-align:center;color:#8fa0b6;font-size:13px}
   </style>
 </head>
 <body>
   <main>
-    <h1>ESP32 RC Car</h1>
-    <div id="link">CONNECTING...</div>
+    <h1>NEURAL ROVER</h1>
+    <div class="video">
+      <img id="camera" alt="ESP32-CAM VGA stream">
+      <div id="cameraLink">CAMERA WAITING</div>
+    </div>
+    <div id="link">CONTROL CONNECTING...</div>
     <div class="pad">
       <button id="f" data-cmd="F">&#8593;</button>
       <button id="l" data-cmd="L">&#8592;</button>
@@ -106,6 +150,23 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
       <button id="b" data-cmd="B">&#8595;</button>
     </div>
     <div id="status">STOP</div>
+    <div class="controls">
+      <div class="control-row">
+        <label for="pan">PAN</label>
+        <input id="pan" type="range" min="0" max="180" value="90">
+        <output id="panValue">90</output>
+      </div>
+      <div class="control-row">
+        <label for="tilt">TILT</label>
+        <input id="tilt" type="range" min="0" max="180" value="90">
+        <output id="tiltValue">90</output>
+      </div>
+      <div class="control-row">
+        <label for="flash">LIGHT</label>
+        <input id="flash" type="range" min="0" max="255" value="0">
+        <output id="flashValue">0</output>
+      </div>
+    </div>
     <div class="help">PRESS AND HOLD · RELEASE TO STOP</div>
   </main>
 
@@ -113,13 +174,17 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
     const buttons = [...document.querySelectorAll('button')];
     const linkBox = document.getElementById('link');
     const statusBox = document.getElementById('status');
+    const cameraImage = document.getElementById('camera');
+    const cameraLink = document.getElementById('cameraLink');
     const names = {S:'STOP',F:'FORWARD',B:'BACKWARD',L:'LEFT',R:'RIGHT'};
 
     let socket = null;
+    let cameraHost = '';
     let heldCommand = 'S';
     let heartbeatTimer = null;
     let keepAliveTimer = null;
     let reconnectTimer = null;
+    const controlTimers = {pan:null,tilt:null,flash:null};
 
     function connectSocket() {
       clearTimeout(reconnectTimer);
@@ -129,6 +194,8 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
         linkBox.textContent = 'CONNECTED';
         linkBox.classList.add('online');
         send('S');
+        send('P' + document.getElementById('pan').value);
+        send('T' + document.getElementById('tilt').value);
         clearInterval(keepAliveTimer);
         keepAliveTimer = setInterval(() => send('K'), 2000);
       };
@@ -152,6 +219,57 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(command);
       }
+    }
+
+    async function refreshCameraHost() {
+      try {
+        const response = await fetch('/camera-ip', {cache:'no-store'});
+        const host = (await response.text()).trim();
+        if (!host || host === cameraHost) return;
+
+        cameraHost = host;
+        cameraLink.textContent = 'CAMERA CONNECTING';
+        cameraLink.classList.remove('online');
+        cameraImage.src =
+          'http://' + cameraHost + ':81/stream?v=' + Date.now();
+      } catch (_) {
+        cameraLink.textContent = 'CAMERA WAITING';
+        cameraLink.classList.remove('online');
+      }
+    }
+
+    cameraImage.onload = () => {
+      cameraLink.textContent = 'CAMERA LIVE';
+      cameraLink.classList.add('online');
+    };
+
+    cameraImage.onerror = () => {
+      cameraLink.textContent = 'CAMERA RECONNECTING';
+      cameraLink.classList.remove('online');
+      if (cameraHost) {
+        setTimeout(() => {
+          cameraImage.src =
+            'http://' + cameraHost + ':81/stream?v=' + Date.now();
+        }, 1000);
+      }
+    };
+
+    function moveServo(axis, prefix, value) {
+      document.getElementById(axis + 'Value').value = value;
+      clearTimeout(controlTimers[axis]);
+      controlTimers[axis] = setTimeout(() => send(prefix + value), 45);
+    }
+
+    function setFlash(value) {
+      document.getElementById('flashValue').value = value;
+      clearTimeout(controlTimers.flash);
+      controlTimers.flash = setTimeout(() => {
+        if (!cameraHost) return;
+        fetch(
+          'http://' + cameraHost + '/flash?value=' + value,
+          {cache:'no-store'}
+        ).catch(() => {});
+      }, 60);
     }
 
     function show(command) {
@@ -200,7 +318,19 @@ const char CONTROL_PAGE[] PROGMEM = R"HTML(
       if (document.hidden) stop();
     });
 
+    document.getElementById('pan').addEventListener('input', event => {
+      moveServo('pan', 'P', event.target.value);
+    });
+    document.getElementById('tilt').addEventListener('input', event => {
+      moveServo('tilt', 'T', event.target.value);
+    });
+    document.getElementById('flash').addEventListener('input', event => {
+      setFlash(event.target.value);
+    });
+
     connectSocket();
+    refreshCameraHost();
+    setInterval(refreshCameraHost, 2500);
   </script>
 </body>
 </html>
@@ -225,6 +355,16 @@ void setEnableDuty(uint8_t duty) {
   ledcWrite(R_ENA, duty);
   ledcWrite(R_ENB, duty);
   currentMotorDuty = duty;
+}
+
+uint32_t servoDutyForAngle(int angle) {
+  const int constrainedAngle = constrain(angle, 0, 180);
+  const uint32_t pulseUs = map(constrainedAngle, 0, 180, 500, 2500);
+  return (pulseUs * 65535UL) / 20000UL;
+}
+
+void setServoAngle(uint8_t pin, int angle) {
+  ledcWrite(pin, servoDutyForAngle(angle));
 }
 
 void stopCar() {
@@ -343,10 +483,30 @@ void onWebSocketEvent(AsyncWebSocket* server,
     return;
   }
 
-  if (type != WS_EVT_DATA || len != 1) return;
+  if (type != WS_EVT_DATA || len == 0) return;
 
   AwsFrameInfo* info = static_cast<AwsFrameInfo*>(arg);
   if (!info->final || info->index != 0 || info->opcode != WS_TEXT) return;
+
+  if (len >= 2 &&
+      (static_cast<char>(data[0]) == 'P' ||
+       static_cast<char>(data[0]) == 'T')) {
+    char angleText[8] = {};
+    const size_t angleLength = min(len - 1, sizeof(angleText) - 1);
+    memcpy(angleText, data + 1, angleLength);
+    const int angle = constrain(atoi(angleText), 0, 180);
+
+    if (static_cast<char>(data[0]) == 'P') {
+      panAngle = angle;
+      setServoAngle(PAN_SERVO_PIN, panAngle);
+    } else {
+      tiltAngle = angle;
+      setServoAngle(TILT_SERVO_PIN, tiltAngle);
+    }
+    return;
+  }
+
+  if (len != 1) return;
 
   // Browser keepalive: keeps phone hotspots from dropping an idle WebSocket.
   if (static_cast<char>(data[0]) == 'K') {
@@ -387,6 +547,73 @@ void setupMotorPins() {
   }
 
   stopCar();
+}
+
+void setupServoPins() {
+  if (!ledcAttach(
+        PAN_SERVO_PIN,
+        SERVO_PWM_FREQUENCY,
+        SERVO_PWM_RESOLUTION
+      )) {
+    Serial.println("Pan servo PWM setup failed.");
+  }
+  if (!ledcAttach(
+        TILT_SERVO_PIN,
+        SERVO_PWM_FREQUENCY,
+        SERVO_PWM_RESOLUTION
+      )) {
+    Serial.println("Tilt servo PWM setup failed.");
+  }
+
+  setServoAngle(PAN_SERVO_PIN, panAngle);
+  setServoAngle(TILT_SERVO_PIN, tiltAngle);
+}
+
+void saveCameraIp(const char* value) {
+  IPAddress parsedIp;
+  if (!parsedIp.fromString(value)) return;
+
+  portENTER_CRITICAL(&cameraIpMux);
+  strncpy(cameraIp, value, sizeof(cameraIp) - 1);
+  cameraIp[sizeof(cameraIp) - 1] = '\0';
+  portEXIT_CRITICAL(&cameraIpMux);
+
+  Serial.print("ESP32-CAM detected at: http://");
+  Serial.println(value);
+}
+
+void processCameraLine() {
+  cameraLine[cameraLineLength] = '\0';
+
+  if (strncmp(cameraLine, "CAMIP:", 6) == 0) {
+    saveCameraIp(cameraLine + 6);
+  }
+
+  cameraLineLength = 0;
+}
+
+void readCameraUart() {
+  while (CameraSerial.available() > 0) {
+    const char value = static_cast<char>(CameraSerial.read());
+
+    if (value == '\n') {
+      processCameraLine();
+    } else if (value != '\r') {
+      if (cameraLineLength < sizeof(cameraLine) - 1) {
+        cameraLine[cameraLineLength++] = value;
+      } else {
+        cameraLineLength = 0;
+      }
+    }
+  }
+}
+
+void maintainCameraLink() {
+  const unsigned long now = millis();
+  if (now - lastCameraIpRequestMs >= 3000) {
+    lastCameraIpRequestMs = now;
+    CameraSerial.write('?');
+  }
 }
 
 void connectToPhoneHotspot() {
@@ -444,6 +671,13 @@ void setup() {
   delay(300);
 
   setupMotorPins();
+  setupServoPins();
+  CameraSerial.begin(
+    CAMERA_UART_BAUD,
+    SERIAL_8N1,
+    CAMERA_UART_RX,
+    CAMERA_UART_TX
+  );
   connectToPhoneHotspot();
 
   webSocket.onEvent(onWebSocketEvent);
@@ -456,6 +690,19 @@ void setup() {
     request->send(response);
   });
 
+  server.on("/camera-ip", HTTP_GET, [](AsyncWebServerRequest* request) {
+    char ipCopy[16] = {};
+    portENTER_CRITICAL(&cameraIpMux);
+    strncpy(ipCopy, cameraIp, sizeof(ipCopy) - 1);
+    portEXIT_CRITICAL(&cameraIpMux);
+
+    if (ipCopy[0] == '\0') {
+      request->send(200, "text/plain", "rovercam.local");
+    } else {
+      request->send(200, "text/plain", ipCopy);
+    }
+  });
+
   server.onNotFound([](AsyncWebServerRequest* request) {
     request->redirect("/");
   });
@@ -466,6 +713,8 @@ void setup() {
 }
 
 void loop() {
+  readCameraUart();
+  maintainCameraLink();
   maintainWiFi();
   webSocket.cleanupClients();
 

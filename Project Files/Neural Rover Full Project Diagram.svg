@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1300" viewBox="0 0 1800 1300">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#10243a"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17314b"/>
+      <stop offset="1" stop-color="#102238"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#ff5252"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#ffb02e"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#42dc93"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#48a9ff"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#bc85ff"/>
+    </marker>
+    <style>
+      .box{fill:url(#panel);stroke:#466784;stroke-width:2;rx:18;filter:url(#shadow)}
+      .box-main{fill:#153c4a;stroke:#4fe0bd;stroke-width:3;rx:20;filter:url(#shadow)}
+      .box-power{fill:#3b2527;stroke:#ff6a6a;stroke-width:3;rx:18;filter:url(#shadow)}
+      .box-camera{fill:#332c4c;stroke:#bc85ff;stroke-width:3;rx:18;filter:url(#shadow)}
+      .title{font:700 42px Arial,sans-serif;fill:#f3f8ff}
+      .subtitle{font:400 19px Arial,sans-serif;fill:#9fb5ca}
+      .h{font:700 25px Arial,sans-serif;fill:#f3f8ff}
+      .sh{font:700 18px Arial,sans-serif;fill:#73e8c1}
+      .t{font:400 17px Arial,sans-serif;fill:#d9e8f4}
+      .small{font:400 14px Arial,sans-serif;fill:#b8cad8}
+      .pin{font:700 16px Consolas,monospace;fill:#fff2b5}
+      .wire12{fill:none;stroke:#ff5252;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .wire5{fill:none;stroke:#ffb02e;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .signal{fill:none;stroke:#42dc93;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .uart{fill:none;stroke:#48a9ff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .wifi{fill:none;stroke:#bc85ff;stroke-width:5;stroke-dasharray:12 9;stroke-linecap:round}
+      .ground{fill:none;stroke:#101820;stroke-width:10;stroke-linecap:round}
+      .label{font:700 15px Arial,sans-serif;fill:#fff}
+      .note{font:700 15px Arial,sans-serif;fill:#ffdc83}
+    </style>
+  </defs>
+
+  <rect width="1800" height="1300" fill="url(#bg)"/>
+  <rect x="22" y="20" width="1756" height="92" rx="22" fill="#0b1c30" stroke="#34516d" stroke-width="2"/>
+  <text x="900" y="63" text-anchor="middle" class="title">NEURAL ROVER — FULL PROJECT DIAGRAM</text>
+  <text x="900" y="92" text-anchor="middle" class="subtitle">Phone control + VGA live stream + pan/tilt + two L298N drivers + four motors</text>
+
+  <!-- Phone hotspot -->
+  <rect x="45" y="150" width="300" height="190" class="box-camera"/>
+  <rect x="145" y="180" width="100" height="115" rx="14" fill="#08111e" stroke="#e2d1ff" stroke-width="3"/>
+  <circle cx="195" cy="278" r="6" fill="#bc85ff"/>
+  <path d="M170 210 Q195 188 220 210 M178 220 Q195 205 212 220 M188 230 Q195 224 202 230"
+        fill="none" stroke="#bc85ff" stroke-width="5" stroke-linecap="round"/>
+  <text x="195" y="320" text-anchor="middle" class="h">PHONE</text>
+  <text x="195" y="344" text-anchor="middle" class="small">Hotspot: CAR · 2.4 GHz</text>
+
+  <!-- Camera -->
+  <rect x="995" y="145" width="390" height="210" class="box-camera"/>
+  <circle cx="1060" cy="220" r="38" fill="#08111e" stroke="#bc85ff" stroke-width="6"/>
+  <circle cx="1060" cy="220" r="17" fill="#4a75a5"/>
+  <rect x="1020" y="270" width="80" height="32" rx="7" fill="#08111e"/>
+  <text x="1130" y="183" class="h">AI-THINKER ESP32-CAM</text>
+  <text x="1130" y="216" class="t">VGA MJPEG: 640 × 480</text>
+  <text x="1130" y="244" class="t">Stream: port 81 /stream</text>
+  <text x="1130" y="272" class="t">Flash LED: GPIO4</text>
+  <text x="1130" y="300" class="pin">UART: U0R / U0T</text>
+  <text x="1130" y="328" class="small">Dedicated camera and stream server</text>
+
+  <!-- Optional AI laptop -->
+  <rect x="1450" y="150" width="305" height="190" class="box"/>
+  <rect x="1500" y="180" width="205" height="110" rx="8" fill="#07111f" stroke="#8db1ce" stroke-width="3"/>
+  <path d="M1478 304 H1728 L1705 326 H1500 Z" fill="#43617b"/>
+  <text x="1603" y="215" text-anchor="middle" class="h">OPTIONAL LAPTOP AI</text>
+  <text x="1603" y="245" text-anchor="middle" class="small">Face recognition · Object detection</text>
+  <text x="1603" y="270" text-anchor="middle" class="small">Fall/pose analysis · Event logging</text>
+  <text x="1603" y="356" text-anchor="middle" class="small">Future stage — joins the same hotspot</text>
+
+  <!-- Wi-Fi lines -->
+  <path d="M345 210 C520 115 790 115 995 205" class="wifi" marker-end="url(#arrow-purple)"/>
+  <text x="655" y="147" text-anchor="middle" class="label">Wi-Fi: video + camera service</text>
+  <path d="M345 275 C420 300 470 325 520 390" class="wifi" marker-end="url(#arrow-purple)"/>
+  <text x="395" y="333" class="label">Phone opens main control page</text>
+  <path d="M1385 220 H1450" class="wifi" marker-end="url(#arrow-purple)"/>
+
+  <!-- Battery -->
+  <rect x="45" y="455" width="300" height="170" class="box-power"/>
+  <rect x="85" y="500" width="80" height="85" rx="8" fill="#111" stroke="#ff6a6a" stroke-width="4"/>
+  <rect x="106" y="481" width="38" height="20" rx="3" fill="#ff6a6a"/>
+  <text x="205" y="505" class="h">3S BATTERY</text>
+  <text x="205" y="539" class="t">11.1 V nominal</text>
+  <text x="205" y="568" class="t">12.6 V fully charged</text>
+  <text x="205" y="597" class="small">High-current motor supply</text>
+
+  <!-- Buck -->
+  <rect x="45" y="710" width="300" height="190" class="box"/>
+  <rect x="82" y="755" width="106" height="82" rx="8" fill="#175c83" stroke="#6bc7ff" stroke-width="3"/>
+  <circle cx="110" cy="795" r="12" fill="#adb8c4"/>
+  <rect x="145" y="770" width="25" height="45" fill="#263c52"/>
+  <text x="205" y="756" class="h">LM2596 BUCK</text>
+  <text x="205" y="791" class="t">Input: battery voltage</text>
+  <text x="205" y="822" class="t">Output: regulated 5.0 V</text>
+  <text x="205" y="854" class="note">Adjust before connecting boards</text>
+
+  <!-- Main ESP32 -->
+  <rect x="455" y="410" width="455" height="500" class="box-main"/>
+  <text x="682" y="454" text-anchor="middle" class="h">MAIN ESP32 — 30 PIN</text>
+  <text x="682" y="482" text-anchor="middle" class="small">Web UI + motors + servos + UART2</text>
+  <line x1="485" y1="505" x2="880" y2="505" stroke="#4f728a" stroke-width="2"/>
+
+  <text x="490" y="538" class="sh">LEFT L298N SIGNALS</text>
+  <text x="490" y="566" class="pin">ENA 25 · IN1 26 · IN2 27</text>
+  <text x="490" y="591" class="pin">IN3 14 · IN4 12 · ENB 33</text>
+
+  <text x="490" y="632" class="sh">RIGHT L298N SIGNALS</text>
+  <text x="490" y="660" class="pin">ENA 32 · IN1 23 · IN2 22</text>
+  <text x="490" y="685" class="pin">IN3 21 · IN4 19 · ENB 18</text>
+
+  <text x="490" y="727" class="sh">PAN / TILT</text>
+  <text x="490" y="755" class="pin">Pan GPIO13 · Tilt GPIO4</text>
+
+  <text x="490" y="797" class="sh">CAMERA UART2</text>
+  <text x="490" y="825" class="pin">RX2 GPIO16 ← CAM U0T</text>
+  <text x="490" y="850" class="pin">TX2 GPIO17 → CAM U0R</text>
+  <text x="490" y="884" class="small">Web controller: port 80 · automatic failsafe STOP</text>
+
+  <!-- Left driver -->
+  <rect x="995" y="445" width="375" height="235" class="box"/>
+  <text x="1182" y="482" text-anchor="middle" class="h">LEFT L298N</text>
+  <text x="1025" y="518" class="pin">ENA ← GPIO25 (PWM)</text>
+  <text x="1025" y="546" class="pin">IN1 26 · IN2 27</text>
+  <text x="1025" y="574" class="pin">IN3 14 · IN4 12</text>
+  <text x="1025" y="602" class="pin">ENB ← GPIO33 (PWM)</text>
+  <text x="1025" y="637" class="t">OUT1/2 → Front-left motor</text>
+  <text x="1025" y="663" class="t">OUT3/4 → Rear-left motor</text>
+
+  <!-- Right driver -->
+  <rect x="995" y="715" width="375" height="235" class="box"/>
+  <text x="1182" y="752" text-anchor="middle" class="h">RIGHT L298N</text>
+  <text x="1025" y="788" class="pin">ENA ← GPIO32 (PWM)</text>
+  <text x="1025" y="816" class="pin">IN1 23 · IN2 22</text>
+  <text x="1025" y="844" class="pin">IN3 21 · IN4 19</text>
+  <text x="1025" y="872" class="pin">ENB ← GPIO18 (PWM)</text>
+  <text x="1025" y="907" class="t">OUT1/2 → Front-right motor</text>
+  <text x="1025" y="933" class="t">OUT3/4 → Rear-right motor</text>
+
+  <!-- Motors -->
+  <rect x="1430" y="425" width="325" height="555" class="box"/>
+  <text x="1592" y="466" text-anchor="middle" class="h">FOUR DC MOTORS</text>
+  <g transform="translate(1480 505)">
+    <circle cx="42" cy="42" r="39" fill="#3b4651" stroke="#f0c347" stroke-width="5"/>
+    <circle cx="42" cy="42" r="12" fill="#f0c347"/>
+    <rect x="82" y="25" width="42" height="34" rx="6" fill="#e2b92e"/>
+    <text x="150" y="48" class="t">Front Left</text>
+  </g>
+  <g transform="translate(1480 610)">
+    <circle cx="42" cy="42" r="39" fill="#3b4651" stroke="#f0c347" stroke-width="5"/>
+    <circle cx="42" cy="42" r="12" fill="#f0c347"/>
+    <rect x="82" y="25" width="42" height="34" rx="6" fill="#e2b92e"/>
+    <text x="150" y="48" class="t">Rear Left</text>
+  </g>
+  <g transform="translate(1480 750)">
+    <circle cx="42" cy="42" r="39" fill="#3b4651" stroke="#f0c347" stroke-width="5"/>
+    <circle cx="42" cy="42" r="12" fill="#f0c347"/>
+    <rect x="82" y="25" width="42" height="34" rx="6" fill="#e2b92e"/>
+    <text x="150" y="48" class="t">Front Right</text>
+  </g>
+  <g transform="translate(1480 855)">
+    <circle cx="42" cy="42" r="39" fill="#3b4651" stroke="#f0c347" stroke-width="5"/>
+    <circle cx="42" cy="42" r="12" fill="#f0c347"/>
+    <rect x="82" y="25" width="42" height="34" rx="6" fill="#e2b92e"/>
+    <text x="150" y="48" class="t">Rear Right</text>
+  </g>
+
+  <!-- Servos -->
+  <rect x="455" y="970" width="455" height="155" class="box"/>
+  <text x="682" y="1008" text-anchor="middle" class="h">PAN / TILT SG90 SERVOS</text>
+  <rect x="500" y="1033" width="135" height="60" rx="12" fill="#2864a1" stroke="#7bbcff" stroke-width="3"/>
+  <rect x="730" y="1033" width="135" height="60" rx="12" fill="#2864a1" stroke="#7bbcff" stroke-width="3"/>
+  <text x="567" y="1070" text-anchor="middle" class="t">PAN · GPIO13</text>
+  <text x="797" y="1070" text-anchor="middle" class="t">TILT · GPIO4</text>
+  <text x="682" y="1112" text-anchor="middle" class="small">Signal from main ESP32 · VCC from regulated 5 V</text>
+
+  <!-- Signal links -->
+  <path d="M910 570 H995" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M910 785 H960 V820 H995" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M682 910 V970" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M1370 555 H1430" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M1370 625 H1400 V655 H1430" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M1370 825 H1430" class="signal" marker-end="url(#arrow-green)"/>
+  <path d="M1370 895 H1400 V900 H1430" class="signal" marker-end="url(#arrow-green)"/>
+
+  <!-- UART links -->
+  <path d="M790 410 V370 H1100 V355" class="uart" marker-end="url(#arrow-blue)"/>
+  <path d="M1180 355 V385 H830 V410" class="uart" marker-end="url(#arrow-blue)"/>
+  <text x="950" y="390" text-anchor="middle" class="label">UART2 · 115200 baud</text>
+
+  <!-- 12V power links -->
+  <path d="M345 520 H395 V385 H945 V500 H995" class="wire12" marker-end="url(#arrow-red)"/>
+  <path d="M395 520 V385 H945 V770 H995" class="wire12" marker-end="url(#arrow-red)"/>
+  <path d="M195 625 V710" class="wire12" marker-end="url(#arrow-red)"/>
+  <text x="420" y="374" class="label">Battery voltage to L298N motor supply</text>
+
+  <!-- 5V regulated links -->
+  <path d="M345 805 H410 V930 H930 V335 H995" class="wire5" marker-end="url(#arrow-orange)"/>
+  <path d="M410 805 V930 H682 V970" class="wire5" marker-end="url(#arrow-orange)"/>
+  <path d="M410 805 V920 H455 V860" class="wire5" marker-end="url(#arrow-orange)"/>
+  <path d="M930 560 H995" class="wire5" marker-end="url(#arrow-orange)"/>
+  <path d="M930 830 H995" class="wire5" marker-end="url(#arrow-orange)"/>
+  <text x="530" y="947" class="label">Regulated 5 V rail</text>
+
+  <!-- Ground bus -->
+  <path d="M70 1170 H1730" class="ground"/>
+  <path d="M195 900 V1170 M682 1125 V1170 M1182 950 V1170 M1592 980 V1170 M1398 355 V1170"
+        class="ground" stroke-width="5"/>
+  <text x="900" y="1195" text-anchor="middle" class="label">COMMON GROUND: battery − · buck − · main ESP32 · ESP32-CAM · both L298Ns · both servos</text>
+
+  <!-- Bottom notes -->
+  <rect x="45" y="1220" width="1710" height="55" rx="15" fill="#0a192a" stroke="#45627b" stroke-width="2"/>
+  <circle cx="75" cy="1248" r="7" fill="#ff5252"/>
+  <text x="92" y="1254" class="small">12 V motor power</text>
+  <circle cx="265" cy="1248" r="7" fill="#ffb02e"/>
+  <text x="282" y="1254" class="small">regulated 5 V</text>
+  <circle cx="455" cy="1248" r="7" fill="#42dc93"/>
+  <text x="472" y="1254" class="small">control/motor signals</text>
+  <circle cx="675" cy="1248" r="7" fill="#48a9ff"/>
+  <text x="692" y="1254" class="small">UART</text>
+  <circle cx="795" cy="1248" r="7" fill="#bc85ff"/>
+  <text x="812" y="1254" class="small">Wi-Fi/data</text>
+  <text x="1045" y="1254" class="note">ENA/ENB jumpers removed · If external 5 V feeds L298N logic, remove each 5V-EN jumper</text>
+</svg>
