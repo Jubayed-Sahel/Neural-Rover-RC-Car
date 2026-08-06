@@ -1,29 +1,35 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <ESPmDNS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
 // Phone hotspot
 const char* WIFI_SSID = "CAR";
 const char* WIFI_PASSWORD = "car123456";
+const char* CONTROLLER_HOSTNAME = "rover";
+const char* CAMERA_HOSTNAME = "rovercam";
 
-// Left L298N
-// OUT1/OUT2 = front-left, OUT3/OUT4 = rear-left
-const uint8_t L_ENA = 25;
-const uint8_t L_IN1 = 26;
-const uint8_t L_IN2 = 27;
-const uint8_t L_IN3 = 14;
-const uint8_t L_IN4 = 12;
-const uint8_t L_ENB = 33;
+// Corrected physical motor mapping:
+// the driver previously coded as RIGHT is physically on the LEFT side.
+// OUT1/OUT2 = front-left, OUT3/OUT4 = rear-left.
+const uint8_t L_ENA = 32;
+// Front-left polarity is opposite to its rear motor, so these are swapped.
+const uint8_t L_IN1 = 22;
+const uint8_t L_IN2 = 23;
+const uint8_t L_IN3 = 21;
+const uint8_t L_IN4 = 19;
+const uint8_t L_ENB = 18;
 
-// Right L298N
-// OUT1/OUT2 = front-right, OUT3/OUT4 = rear-right
-const uint8_t R_ENA = 32;
-const uint8_t R_IN1 = 23;
-const uint8_t R_IN2 = 22;
-const uint8_t R_IN3 = 21;
-const uint8_t R_IN4 = 19;
-const uint8_t R_ENB = 18;
+// The driver previously coded as LEFT is physically on the RIGHT side.
+// OUT1/OUT2 = front-right, OUT3/OUT4 = rear-right.
+const uint8_t R_ENA = 25;
+// Corrected front-right polarity.
+const uint8_t R_IN1 = 26;
+const uint8_t R_IN2 = 27;
+const uint8_t R_IN3 = 14;
+const uint8_t R_IN4 = 12;
+const uint8_t R_ENB = 33;
 
 // Pan/tilt and ESP32-CAM UART pins from the master documentation.
 const uint8_t PAN_SERVO_PIN = 13;
@@ -69,6 +75,7 @@ unsigned long lastRampMs = 0;
 bool directionChangePending = false;
 unsigned long lastWiFiRetryMs = 0;
 bool wasWiFiConnected = false;
+bool controllerMdnsReady = false;
 int panAngle = SERVO_START_ANGLE;
 int tiltAngle = SERVO_START_ANGLE;
 
@@ -383,11 +390,11 @@ void applyDirection(Motion motion) {
   int8_t rightDirection = 0;
 
   if (motion == FORWARD) {
-    leftDirection = 1;
-    rightDirection = 1;
-  } else if (motion == BACKWARD) {
     leftDirection = -1;
     rightDirection = -1;
+  } else if (motion == BACKWARD) {
+    leftDirection = 1;
+    rightDirection = 1;
   } else if (motion == LEFT) {
     leftDirection = -1;
     rightDirection = 1;
@@ -573,13 +580,31 @@ void saveCameraIp(const char* value) {
   IPAddress parsedIp;
   if (!parsedIp.fromString(value)) return;
 
+  bool changed = false;
   portENTER_CRITICAL(&cameraIpMux);
+  changed = strcmp(cameraIp, value) != 0;
   strncpy(cameraIp, value, sizeof(cameraIp) - 1);
   cameraIp[sizeof(cameraIp) - 1] = '\0';
   portEXIT_CRITICAL(&cameraIpMux);
 
-  Serial.print("ESP32-CAM detected at: http://");
-  Serial.println(value);
+  if (changed) {
+    Serial.println();
+    Serial.println("===== ESP32-CAM ENDPOINTS =====");
+    Serial.print("Camera page (IP)    : http://");
+    Serial.print(value);
+    Serial.println('/');
+    Serial.print("Camera stream (IP)  : http://");
+    Serial.print(value);
+    Serial.println(":81/stream");
+    Serial.print("Camera page (fixed) : http://");
+    Serial.print(CAMERA_HOSTNAME);
+    Serial.println(".local/");
+    Serial.print("Stream (fixed)      : http://");
+    Serial.print(CAMERA_HOSTNAME);
+    Serial.println(".local:81/stream");
+    Serial.println("===============================");
+    Serial.println();
+  }
 }
 
 void processCameraLine() {
@@ -616,9 +641,50 @@ void maintainCameraLink() {
   }
 }
 
+void startControllerMdns() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  if (controllerMdnsReady) {
+    MDNS.end();
+    controllerMdnsReady = false;
+  }
+
+  controllerMdnsReady = MDNS.begin(CONTROLLER_HOSTNAME);
+  if (controllerMdnsReady) {
+    MDNS.addService("http", "tcp", 80);
+  } else {
+    Serial.println("Warning: rover.local mDNS could not start.");
+  }
+}
+
+void printControllerEndpoints() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  Serial.println();
+  Serial.println("===== NEURAL ROVER NETWORK =====");
+  Serial.print("Wi-Fi                 : ");
+  Serial.println(WIFI_SSID);
+  Serial.print("Main control page (IP): http://");
+  Serial.print(WiFi.localIP());
+  Serial.println('/');
+  Serial.print("Main control (fixed)  : http://");
+  Serial.print(CONTROLLER_HOSTNAME);
+  Serial.println(".local/");
+  Serial.print("Camera page (fixed)   : http://");
+  Serial.print(CAMERA_HOSTNAME);
+  Serial.println(".local/");
+  Serial.print("Camera stream (fixed) : http://");
+  Serial.print(CAMERA_HOSTNAME);
+  Serial.println(".local:81/stream");
+  Serial.println("Waiting for camera IP over UART...");
+  Serial.println("================================");
+  Serial.println();
+}
+
 void connectToPhoneHotspot() {
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  WiFi.setHostname(CONTROLLER_HOSTNAME);
   WiFi.setSleep(false);
   WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -635,7 +701,7 @@ void connectToPhoneHotspot() {
 
   if (WiFi.status() == WL_CONNECTED) {
     wasWiFiConnected = true;
-    Serial.print("Connected. Open: http://");
+    Serial.print("Connected. Controller IP: ");
     Serial.println(WiFi.localIP());
   } else {
     Serial.println("Hotspot not found yet. Automatic reconnect is active.");
@@ -646,8 +712,9 @@ void maintainWiFi() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!wasWiFiConnected) {
       wasWiFiConnected = true;
-      Serial.print("Wi-Fi reconnected. Open: http://");
-      Serial.println(WiFi.localIP());
+      startControllerMdns();
+      Serial.println("Wi-Fi reconnected.");
+      printControllerEndpoints();
     }
     return;
   }
@@ -679,6 +746,7 @@ void setup() {
     CAMERA_UART_TX
   );
   connectToPhoneHotspot();
+  startControllerMdns();
 
   webSocket.onEvent(onWebSocketEvent);
   server.addHandler(&webSocket);
@@ -710,6 +778,7 @@ void setup() {
   server.begin();
   lastCommandMs = millis();
   Serial.println("WebSocket RC car controller ready.");
+  printControllerEndpoints();
 }
 
 void loop() {

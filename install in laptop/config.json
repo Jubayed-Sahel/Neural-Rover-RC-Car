@@ -1,0 +1,10 @@
+{
+  "stream_url": "http://rovercam.local:81/stream",
+  "recognition_threshold": 0.45,
+  "detection_threshold": 0.5,
+  "detection_size": 320,
+  "minimum_face_width": 60,
+  "inference_interval_seconds": 0.3,
+  "event_log_cooldown_seconds": 10,
+  "capture_target": 8
+}

@@ -1,0 +1,30 @@
+NEURAL ROVER - LAPTOP FACE RECOGNITION
+=======================================
+
+Use these files in this order:
+
+1. Connect the laptop and ESP32-CAM to the same CAR hotspot.
+2. Double-click: 01_INSTALL_GPU.bat
+3. Double-click: 02_CHECK_SETUP.bat
+4. Double-click: 03_TEST_CAMERA.bat
+5. Double-click: 04_CAPTURE_FACES.bat
+   - Enter a person's name.
+   - Face the camera.
+   - Press SPACE eight times while changing the face angle slightly.
+   - Press Q when finished.
+6. Repeat step 5 for every person.
+7. Double-click: 05_RUN_RECOGNITION.bat
+
+Stable ESP32-CAM stream:
+http://rovercam.local:81/stream
+
+If rovercam.local is not resolved by Windows, replace it in config.json
+with the Camera stream (IP) printed by the ESP32 serial monitor.
+
+Important:
+- Close the camera stream in other browsers before recognition.
+- The first model run needs internet to download buffalo_l.
+- Press Q to close any camera window.
+- Registered photographs and recognition logs stay on this laptop.
+
+For more information, open README.md.

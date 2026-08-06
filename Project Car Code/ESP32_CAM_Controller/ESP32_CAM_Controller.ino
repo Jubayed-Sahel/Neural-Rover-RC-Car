@@ -7,6 +7,7 @@
 // Phone hotspot used by both ESP32 boards.
 const char* WIFI_SSID = "CAR";
 const char* WIFI_PASSWORD = "car123456";
+const char* CAMERA_HOSTNAME = "rovercam";
 
 // AI-Thinker ESP32-CAM camera pins.
 constexpr int CAM_PIN_PWDN = 32;
@@ -32,6 +33,7 @@ httpd_handle_t controlServer = nullptr;
 httpd_handle_t streamServer = nullptr;
 unsigned long lastIpAnnouncementMs = 0;
 int flashDuty = 0;
+bool cameraUsesSoftwareJpeg = false;
 
 const char CAMERA_PAGE[] PROGMEM = R"HTML(
 <!doctype html>
@@ -205,6 +207,7 @@ bool setupCamera() {
     config.fb_count = 1;
     config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
     activeFrameSize = FRAMESIZE_QVGA;
+    cameraUsesSoftwareJpeg = true;
     error = esp_camera_init(&config);
   }
 
@@ -216,6 +219,11 @@ bool setupCamera() {
   sensor_t* sensor = esp_camera_sensor_get();
   if (sensor) {
     sensor->set_framesize(sensor, activeFrameSize);
+    Serial.printf("Camera sensor PID: 0x%04X\n", sensor->id.PID);
+    Serial.print("Capture format: ");
+    Serial.println(cameraUsesSoftwareJpeg ? "RGB565 + software JPEG" : "hardware JPEG");
+    Serial.print("Capture resolution: ");
+    Serial.println(activeFrameSize == FRAMESIZE_QVGA ? "320 x 240" : "640 x 480");
   }
 
   return true;
@@ -283,6 +291,7 @@ bool startWebServers() {
 void connectToHotspot() {
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  WiFi.setHostname(CAMERA_HOSTNAME);
   WiFi.setSleep(false);
   WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -332,13 +341,27 @@ void setup() {
 
   if (MDNS.begin("rovercam")) {
     MDNS.addService("http", "tcp", 80);
+    MDNS.addService("mjpeg", "tcp", 81);
+  } else {
+    Serial.println("Warning: rovercam.local mDNS could not start.");
   }
 
-  Serial.print("Camera page: http://");
-  Serial.println(WiFi.localIP());
-  Serial.print("VGA stream: http://");
+  Serial.println();
+  Serial.println("===== ESP32-CAM NETWORK =====");
+  Serial.print("Camera page (IP)    : http://");
+  Serial.print(WiFi.localIP());
+  Serial.println('/');
+  Serial.print("Camera stream (IP)  : http://");
   Serial.print(WiFi.localIP());
   Serial.println(":81/stream");
+  Serial.print("Camera page (fixed) : http://");
+  Serial.print(CAMERA_HOSTNAME);
+  Serial.println(".local/");
+  Serial.print("Stream (fixed)      : http://");
+  Serial.print(CAMERA_HOSTNAME);
+  Serial.println(".local:81/stream");
+  Serial.println("=============================");
+  Serial.println();
   announceCameraIp();
 }
 
