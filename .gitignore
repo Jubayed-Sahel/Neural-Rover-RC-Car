@@ -1,0 +1,32 @@
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# Arduino and PlatformIO build output
+build/
+.pio/
+*.elf
+*.hex
+*.bin
+*.map
+
+# Python environments and caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Local AI models and generated recognition data
+*.onnx
+*.engine
+install in laptop/known_faces/*
+!install in laptop/known_faces/README.txt
+
+# Local temporary output
+tmp/
+*.log
