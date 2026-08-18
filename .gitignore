@@ -30,3 +30,10 @@ install in laptop/known_faces/*
 # Local temporary output
 tmp/
 *.log
+*.inspect.ndjson
+node_modules/
+build_presentation/
+output/
+
+# Superseded root-level export (final report lives in IEEE_499A_Report/)
+/Neural_Rover_IEEE_499A_Report_Revised.pdf
