@@ -1,4 +1,4 @@
-# Neural Rover
+# Neural Rover RC Car
 
 <p align="center">
   <strong>A Wi-Fi-controlled four-wheel rover with live ESP32-CAM video, pan–tilt control, and fail-safe motor handling.</strong>
@@ -12,12 +12,14 @@
 </p>
 
 <p align="center">
-  <img src="Project%20Files/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
+  <img src="Project%20Files/Neural%20Rover%20Prototype.png" alt="Neural Rover RC Car prototype" width="900">
 </p>
+
+<p align="center"><em>Final four-wheel Neural Rover prototype with ESP32-CAM, pan-tilt mount, and onboard control electronics.</em></p>
 
 ## Overview
 
-Neural Rover is a complete CSE499A embedded-systems project built around two ESP32 boards:
+Neural Rover RC Car is a complete CSE499A embedded-systems project built around two ESP32 boards:
 
 - A **30-pin ESP32** hosts the mobile-friendly controller, handles WebSocket commands, drives four motors through two L298N modules, controls the pan–tilt servos, and applies automatic stopping.
 - An **ESP32-CAM** captures and streams live video, controls its flash LED, and reports its current IP address to the main ESP32 through UART.
@@ -42,6 +44,10 @@ Both boards join the same 2.4 GHz network. The user drives the rover, views the 
 - Separate battery motor rail and regulated 5 V logic rail
 
 ## System Architecture
+
+<p align="center">
+  <img src="Project%20Files/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
+</p>
 
 ```text
 Phone / laptop browser
@@ -270,4 +276,3 @@ The following project tasks are complete:
 **Course:** CSE499A
 
 Project-specific firmware and documentation in this repository are maintained by J. A. Sahel.
-
