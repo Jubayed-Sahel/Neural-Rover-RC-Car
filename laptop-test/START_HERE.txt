@@ -1,0 +1,18 @@
+CSE499B LAPTOP TEST
+
+We are testing body-pose tracking, processing speed, memory use, and false alarms.
+This is not just a webcam test, and it is not yet a validated fall detector.
+
+1. Extract/copy this whole folder to your ASUS laptop.
+2. Install 64-bit Python 3.12 with the Python launcher.
+3. Double-click 01_INSTALL.bat while connected to the internet.
+4. Double-click 02_TEST_LIVE.bat.
+5. Keep your whole body visible. Test ordinary movements for five minutes.
+6. Press Q to finish. Send back the newest results folder's summary.json.
+
+Q = quit | A = acknowledge/reset experimental alert | S = snapshot
+
+For recorded clips, drag an MP4/AVI onto 03_TEST_VIDEO.bat.
+Do not perform a dangerous fall for testing.
+
+Read README.md for configuration, results, and limitations.

@@ -1,3 +1,5 @@
+> Legacy reference: this package targets ESP32-CAM face recognition and NVIDIA/CUDA hardware. It is not the new USB-camera fall-detection setup and should not be used to install dependencies on the Intel Arc desktop or current CPU test environment on the demonstration laptop. See ../CSE499B_PLAN.md for the current plan.
+
 # Neural Rover laptop face recognition
 
 This folder receives the ESP32-CAM MJPEG stream and runs InsightFace `buffalo_l` on the laptop. The ESP32 boards do not run the recognition model.

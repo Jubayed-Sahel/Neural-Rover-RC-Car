@@ -1,5 +1,7 @@
 # Neural Rover RC Car
 
+> CSE499B planning: see [CSE499B_PLAN.md](CSE499B_PLAN.md) for the stationary USB-camera fall-detection dashboard and Cloudflare integration. The Arduino firmware remains the working car baseline.
+
 <p align="center">
   <strong>A Wi-Fi-controlled four-wheel rover with live ESP32-CAM video, pan–tilt control, and fail-safe motor handling.</strong>
 </p>

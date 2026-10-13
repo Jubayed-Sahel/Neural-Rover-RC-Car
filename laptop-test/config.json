@@ -1,0 +1,17 @@
+{
+  "camera_index": 0,
+  "capture_width": 1280,
+  "capture_height": 720,
+  "input_width": 640,
+  "inference_interval_seconds": 0.1,
+  "model_path": "models/pose_landmarker_lite.task",
+  "visibility_threshold": 0.6,
+  "fall": {
+    "max_gap_seconds": 0.6,
+    "descent_window_seconds": 0.8,
+    "minimum_drop_body_units": 0.3,
+    "horizontal_angle_degrees": 55,
+    "minimum_low_seconds": 1.2,
+    "candidate_timeout_seconds": 3.0
+  }
+}

@@ -31,6 +31,8 @@ install in laptop/known_faces/*
 tmp/
 *.log
 *.inspect.ndjson
+laptop-test/results/
+/laptop-test-package.zip
 node_modules/
 build_presentation/
 output/
