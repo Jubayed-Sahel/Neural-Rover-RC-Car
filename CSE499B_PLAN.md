@@ -154,6 +154,22 @@ Test on the actual laptop, webcam, and hotspot. Package tested dependencies, dow
 
 ## Evaluation protocol
 
+### First laptop benchmark received
+
+Source: `laptop-test/results/20261014_025956_562143/summary.json`, pulled from GitHub commit `57c725f`.
+
+- A 60.4-second live-camera CPU run completed without a reported error.
+- Camera output was 640 × 480 despite the requested 1280 × 720 capture size.
+- Processed 435 frames at 7.2 frames/second. The configuration intentionally spaces inference by at least 0.1 seconds; this is not an unrestricted model-speed benchmark.
+- Mean model inference was 28.79 ms; p95 frame age after capture retrieval was 43 ms. Driver buffering and complete remote-dashboard latency are not measured.
+- Peak sampled application RAM was 206.6 MB, not total laptop RAM.
+- Full-body reliability fraction was 0.0: no processed frame satisfied the baseline's required landmark confidence and in-frame checks.
+- Zero fall events do not demonstrate successful detection or low false-alarm rates, because the fall baseline had no usable full-body observations.
+
+Only the summary was pushed; frame-level metrics, event logs, and screenshots were not supplied. It cannot establish whether pose was absent, legs were out of frame, or landmark confidence was insufficient. Next test: full-body framing and ordinary movements for five minutes, preserving `metrics.csv` and one annotated snapshot for diagnosis. Do not optimize GPU use or lower confidence thresholds until tracking validity is understood.
+
+The user subsequently confirmed sitting close to the laptop during this run. This is consistent with cropped lower-body landmarks and explains why it was not a full-body evaluation; an annotated snapshot is still needed to inspect tracking. For the next run, position the camera securely to include shoulders, hips, knees, ankles, and surrounding floor; check that "Full body: visible" appears, test ordinary movements, press S for a snapshot, and Q to finish. No staged fall is needed for this framing check.
+
 Include safely staged falls or suitable public recordings and ordinary activities: walking, bending, sitting rapidly, kneeling, picking up objects, intentional lying down, and getting up. Include different distances, lighting, partial occlusion, empty frames, and camera interruption.
 
 Separate development/calibration and held-out test recordings by person or recording session where practical. Do not place adjacent frames from the same clip in both sets. Report event-level precision and recall, missed falls, false alarms per hour of ordinary activity, alert delay, and laptop processing performance. Define event-matching and timing rules before final testing.
