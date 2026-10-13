@@ -111,6 +111,29 @@ Keep alerts latched until acknowledged, avoid duplicate event storms, and log th
 
 ## Camera and preprocessing
 
+### Camera selection update
+
+Budget remains BDT 2,500–3,000. The original candidate was the A4Tech PK-910H. After comparing specifications for ground-level full-body framing, the revised recommendation is Rapoo C260 if available within the full budget. No purchase or final acceptance of the revised model has been confirmed.
+
+A4Tech lists 1080p, fixed focus from 60 cm onward, and a 70-degree viewing angle. Rapoo lists 1080p, fixed focus, and a 95-degree diagonal field of view. These angle specifications are not necessarily measured on the same axis. The C260's advertised wider coverage is a reason to test it for this use, not proof of better image quality or fall accuracy. A wider view also reduces face size at a given distance and resolution.
+
+Star Tech listings checked on 14 October 2026 showed PK-910H at BDT 2,499 and C260 at BDT 2,999; confirm current price, stock, actual hardware version, and full-body framing before purchase. Neither camera guarantees ground-level fall detection.
+
+- A4Tech manufacturer: https://www.a4tech.com/product.aspx?id=36
+- A4Tech retailer: https://www.startech.com.bd/a4-tech-pk-910h-1080p-webcam
+- Rapoo manufacturer: https://rapoo.com/en/product/C260
+- Rapoo retailer: https://www.startech.com.bd/rapoo-c260-usb-fhd-webcam
+
+Planned-system illustration: [Fall detection and rover architecture](Project%20Files/CSE499B_Fall_Detection_Architecture.png). It illustrates the target architecture; dashboard and tunnel integration are not yet implemented.
+
+### Rover-height viewpoint requirement
+
+Confirmed requirement: detect human falls from a camera near ground level, representing the rover viewpoint. Keep the camera separate in the current prototype, but evaluate it at the intended rover mounting height and angle. This is a required evaluation condition, not a completed capability.
+
+Mount the separate test camera at the proposed rover camera height and angle. Record those measurements, subject distance, floor coverage, and occlusions. Evaluate falls and ordinary activities from that viewpoint using held-out recordings. Desk-height performance cannot establish rover-height performance. Include low-angle footage during calibration/training, with separate sessions for final evaluation; do not assume a public dataset matches this geometry.
+
+Perspective can change apparent torso orientation and landmark visibility. The current baseline uses 2D landmarks and requires visible ankles and knees; it may fail from ground level or after occlusion. Measure those failures before deciding whether to adapt the rules, change the pose model, or train a temporal classifier. If a camera is later mounted on a moving rover, test camera-motion false alarms separately and begin with detection while parked. Reliable moving-camera operation is additional scope, not validated by a stationary low-camera test. Define numerical recall, false-alarm, and alert-delay targets with the supervisor rather than promising detection of every fall.
+
 - Mount the webcam securely so the whole person and surrounding floor remain visible.
 - Test available capture modes rather than assuming the advertised mode is delivered by the driver.
 - Start inference at a modest resolution and increase only when measured accuracy requires it.
