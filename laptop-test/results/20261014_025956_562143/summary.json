@@ -1,0 +1,41 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+  "python": "3.12.14",
+  "mediapipe": "0.10.21",
+  "opencv": "4.11.0",
+  "source": "camera 0",
+  "cpu_only": true,
+  "actual_capture_size": [
+    640,
+    480
+  ],
+  "elapsed_seconds": 60.4,
+  "processed_frames": 435,
+  "wall_clock_processed_fps": 7.2,
+  "mean_inference_ms": 28.79,
+  "p95_frame_age_ms": 43.0,
+  "peak_sampled_ram_mb": 206.6,
+  "full_body_reliable_fraction": 0.0,
+  "possible_fall_events": 0,
+  "exit_reason": "duration reached",
+  "error": null,
+  "config": {
+    "camera_index": 0,
+    "capture_width": 1280,
+    "capture_height": 720,
+    "input_width": 640,
+    "inference_interval_seconds": 0.1,
+    "model_path": "models/pose_landmarker_lite.task",
+    "visibility_threshold": 0.6,
+    "fall": {
+      "max_gap_seconds": 0.6,
+      "descent_window_seconds": 0.8,
+      "minimum_drop_body_units": 0.3,
+      "horizontal_angle_degrees": 55,
+      "minimum_low_seconds": 1.2,
+      "candidate_timeout_seconds": 3.0
+    }
+  },
+  "metric_note": "Frame age starts when OpenCV returns a frame; camera driver buffering is not measured. Video FPS is playback-paced unless headless. Confirmation delay is from rule candidate, not labelled fall onset."
+}
