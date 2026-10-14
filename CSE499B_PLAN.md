@@ -4,9 +4,34 @@ Planning baseline: 14 October 2026. The standalone CPU laptop test package is im
 
 ## Project scope
 
-Build a stationary USB-camera fall-detection prototype and a shared dashboard for monitoring and manual rover control. The camera remains separate from the car. An operator can respond to a possible-fall alert by driving the rover; autonomous navigation and video from the rover's viewpoint are future scope.
+Build a stationary-camera fall-detection prototype and a shared dashboard for monitoring and manual rover control. The current intended camera connection is Wi-Fi/RTSP; USB remains supported by the existing test package. The camera remains separate from the car. An operator can respond to a possible-fall alert by driving the rover; autonomous navigation and video from the rover's viewpoint are future scope.
 
 Develop on the desktop (16 GB RAM, Intel Arc A770), but run and evaluate the complete demonstration on the ASUS VivoBook (Intel Core i5-8250U, 8 GB RAM, NVIDIA GeForce MX150 with 4 GB VRAM and Intel UHD 620). The demonstration must not depend on the desktop. Camera budget: BDT 2,500–3,000; proposed camera: A4Tech PK-910H, subject to purchase and testing.
+
+## Latest direction — 15 October 2026
+
+The user prefers a wireless camera within BDT 2,500–3,000. The current recommended candidate is TP-Link Tapo C210, pending purchase and testing. This supersedes the USB-camera recommendations below as the intended purchase direction; they remain historical alternatives.
+
+TP-Link documents local RTSP/ONVIF access and 2.4 GHz Wi-Fi. Wireless refers to video connectivity, not power: use the supplied adapter for the separate-camera prototype. Future rover mounting requires a secure mount and appropriately regulated power for the actual camera hardware version. Do not connect it directly to the existing motor supply.
+
+Star Tech listed C210 at BDT 2,350 when checked on 14 October 2026. Recheck price, stock, warranty, and the actual hardware version before purchasing.
+
+After purchase:
+
+1. Configure the camera through the Tapo app and create its local camera account.
+2. Put the camera and PC on the same 2.4 GHz network and verify local RTSP playback in VLC.
+3. Test phone-hotspot client-to-client connectivity before relying on it for camera, laptop, and ESP32 communication.
+4. Add RTSP input, reconnect handling, bounded buffering, and credential redaction to the test package. This support has not yet been implemented; the current package accepts a local webcam or recorded video.
+5. Test at rover camera height with fixed pan/tilt. Measure tracking quality, stream interruptions, and end-to-end video delay on the PC, then repeat on the laptop.
+6. Begin further detector development after the camera arrives. Reuse a pretrained pose estimator as appropriate and build/evaluate our own temporal fall-decision pipeline. The external repository review is set aside; no integration of that code is currently planned.
+
+Do not commit camera credentials or authenticated stream URLs to GitHub. Local camera video goes to the computer; Cloudflare later exposes the computer's web application, not a raw RTSP endpoint. The camera's own motion/person detection is not the project's fall classifier. Ground-level fall accuracy remains unproven.
+
+- Candidate: https://www.startech.com.bd/tp-link-tapo-c210-wi-fi-camera
+- Manufacturer specifications: https://www.tp-link.com/en/home-networking/cloud-camera/tapo-c210/
+- Local streaming setup: https://www.tp-link.com/us/support/faq/2680/
+
+The earlier USB-based diagram and architecture steps represent the initial design. For the wireless version, replace the webcam-to-computer USB connection with local Wi-Fi RTSP input; detection, dashboard, and car-command relay still run on the computer.
 
 ## Mandatory laptop testing requirement
 
