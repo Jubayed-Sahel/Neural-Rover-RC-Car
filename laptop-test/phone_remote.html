@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neural Rover · Phone remote</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,sans-serif;background:Canvas;color:CanvasText}
+*{box-sizing:border-box}body{margin:0}main{max-width:700px;margin:auto;padding:16px}
+h1{font-size:24px;margin:0 0 4px}p{line-height:1.45}button,input{font:inherit}
+button{cursor:pointer;min-height:48px;border:1px solid #80808066;border-radius:10px;padding:10px 16px}
+button:disabled{opacity:.45;cursor:default}label{display:block;margin:16px 0 6px}
+input{padding:12px;width:100%;max-width:300px;border:1px solid #80808088;border-radius:8px}
+.muted{opacity:.72;font-size:14px}.error{color:light-dark(#a62323,#ffaaaa);min-height:24px}
+#pairBox{margin:24px 0}#pairBox button{display:block;margin-top:12px}
+.video{width:100%;aspect-ratio:16/9;position:relative;background:#111;margin-top:16px;border-radius:10px;overflow:hidden}
+.video img{width:100%;height:100%;object-fit:contain}.video p{position:absolute;inset:0;display:grid;place-items:center;color:#eee;margin:16px;text-align:center}
+#matches{min-height:24px;margin:8px 0}#connection{min-height:24px;margin:0 0 10px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:auto}
+.pad button{min-height:64px;font-size:22px;touch-action:none;user-select:none;-webkit-user-select:none}
+.pad button[data-direction=F]{grid-column:2}.pad button[data-direction=L]{grid-column:1}
+#stop{background:#a62323;color:white;font-size:17px;font-weight:600}
+.pad button[data-direction=B]{grid-column:2}.pad button.held{background:#146e4b;color:white}
+[hidden]{display:none!important}
+</style>
+</head>
+<body><main>
+<h1>Neural Rover</h1>
+<div class="muted">Live Tapo view and manual driving</div>
+<form id="pairBox">
+<label for="code">Laptop pairing code</label>
+<input id="code" name="code" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" autocomplete="off" required>
+<button type="submit">Connect this phone</button>
+<p class="muted">Choose Connect phone in the laptop browser workspace for the eight-digit code. Keep both devices on the same network.</p>
+</form>
+<section id="remote" hidden>
+<div class="video"><img id="camera" alt="Live Tapo feed with recognition labels" hidden><p id="videoNote">Waiting for fresh video from the laptop…</p></div>
+<p id="matches">No live matches</p><p id="connection">Checking rover connection…</p>
+<div class="pad" aria-label="Rover driving controls">
+<button data-direction="F" aria-label="Hold to drive forward" disabled>↑ Forward</button>
+<button data-direction="L" aria-label="Hold to turn left" disabled>← Left</button>
+<button id="stop" type="button">STOP</button>
+<button data-direction="R" aria-label="Hold to turn right" disabled>Right →</button>
+<button data-direction="B" aria-label="Hold to reverse" disabled>↓ Reverse</button>
+</div>
+<p class="muted">Hold a direction to drive. Release to stop. Driving works even if video is unavailable. Stale control input or leaving this page stops movement. Test with the wheels raised first.</p>
+</section>
+<p id="error" class="error" role="status"></p>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const buttons=[...document.querySelectorAll('[data-direction]')];
+let paired=false, state=null, sequence=0, gesture=0, held=null, lease=null, timer=null, videoRequested=false, videoError=false;
+async function request(path,body,keepalive=false){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),1200);
+  try{
+    const response=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},
+      body:body?JSON.stringify(body):undefined,cache:'no-store',credentials:'same-origin',signal:controller.signal,keepalive});
+    const value=await response.json();
+    if(!response.ok){const error=new Error(value.error||'Connection lost.');error.status=response.status;throw error;}
+    return value;
+  }finally{clearTimeout(timeout);}
+}
+function clearHeld(){
+  gesture++;held=null;lease=null;clearTimeout(timer);timer=null;
+  buttons.forEach(button=>button.classList.remove('held'));
+}
+function stop(force=false){
+  const active=held!==null||lease!==null;
+  clearHeld();
+  if(paired&&(active||force))request('/api/control',{operation:'stop',sequence:++sequence},true).catch(()=>{});
+}
+function loggedOut(){
+  stop();paired=false;state=null;$('pairBox').hidden=false;$('remote').hidden=true;
+  $('camera').removeAttribute('src');videoRequested=false;
+}
+async function poll(){
+  try{
+    const next=await request('/api/status');
+    paired=true;state=next;sequence=Math.max(sequence,next.sequence);
+    $('pairBox').hidden=true;$('remote').hidden=false;
+    $('matches').textContent=next.matches;
+    $('connection').textContent=next.rover_connected?'Rover connected · hold to drive':'Connect the main ESP32 from Rover controls on the laptop.';
+    $('videoNote').hidden=next.video_live&&!videoError;$('camera').hidden=!next.video_live||videoError;
+    if(next.video_live&&!videoRequested){$('camera').src='/video?t='+Date.now();videoRequested=true;}
+    if(!next.video_live){$('videoNote').textContent='No fresh video. Driving remains available when the rover is connected.';}
+    buttons.forEach(button=>button.disabled=!next.can_drive);
+  }catch(error){
+    buttons.forEach(button=>button.disabled=true);stop();
+    $('camera').hidden=true;$('videoNote').hidden=false;$('videoNote').textContent='Connection lost. Movement stopped.';
+    if(error.status===401)loggedOut();
+    else $('error').textContent=error.message==='The user aborted a request.'?'Connection timed out.':error.message;
+  }finally{setTimeout(poll,500);}
+}
+$('pairBox').addEventListener('submit',async event=>{
+  event.preventDefault();
+  try{await request('/api/pair',{code:$('code').value});sequence=0;$('code').value='';$('error').textContent='';}
+  catch(error){$('error').textContent=error.message;}
+});
+async function start(event,button){
+  event.preventDefault();if(!paired||!state?.can_drive||held!==null)return;
+  const direction=button.dataset.direction;
+  const current=++gesture;held=button;button.classList.add('held');
+  button.setPointerCapture(event.pointerId);
+  try{
+    const begun=await request('/api/control',{operation:'begin',direction,epoch:state.epoch,sequence:++sequence});
+    if(current!==gesture||held!==button)return;
+    lease=begun.lease;const epoch=begun.epoch;
+    async function renew(){
+      if(current!==gesture||held!==button)return;
+      try{
+        await request('/api/control',{operation:'hold',direction,lease,epoch,sequence:++sequence});
+        if(current===gesture&&held===button)timer=setTimeout(renew,120);
+      }catch(error){stop();$('error').textContent=error.message;}
+    }
+    $('error').textContent='';timer=setTimeout(renew,120);
+  }catch(error){if(current===gesture){stop();$('error').textContent=error.message;}}
+}
+buttons.forEach(button=>{
+  button.addEventListener('pointerdown',event=>start(event,button));
+  button.addEventListener('pointermove',event=>{
+    if(held!==button)return;const r=button.getBoundingClientRect();
+    if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)stop();
+  });
+  button.addEventListener('lostpointercapture',()=>stop());
+  button.addEventListener('contextmenu',event=>event.preventDefault());
+});
+window.addEventListener('pointerup',()=>stop());window.addEventListener('pointercancel',()=>stop());
+window.addEventListener('blur',()=>stop());window.addEventListener('pagehide',()=>stop());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')stop(true);});
+$('stop').addEventListener('click',()=>stop(true));
+$('camera').addEventListener('load',()=>{videoError=false;});
+$('camera').addEventListener('error',()=>{
+  videoRequested=false;videoError=true;$('camera').hidden=true;$('videoNote').hidden=false;
+  $('videoNote').textContent='Video unavailable. Driving remains available when the rover is connected.';
+});
+poll();
+</script></body></html>

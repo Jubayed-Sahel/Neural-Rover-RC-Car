@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo Installing CPU laptop pose test in its own environment.
+echo Installing Neural Rover face recognition in its own environment.
 py -3.12 -c "import struct; assert struct.calcsize('P') == 8" >nul 2>nul
 if errorlevel 1 (
   echo Please install 64-bit Python 3.12 from python.org with the Python launcher.
@@ -17,11 +17,9 @@ if errorlevel 1 goto failed
 if errorlevel 1 goto failed
 ".venv\Scripts\python.exe" -m pip install -r requirements-lock.txt
 if errorlevel 1 goto failed
-".venv\Scripts\python.exe" setup_package.py
+".venv\Scripts\python.exe" rover_app.py --check
 if errorlevel 1 goto failed
-".venv\Scripts\python.exe" test_pose.py --check
-if errorlevel 1 goto failed
-echo Installation complete. Next open 02_TEST_LIVE.bat.
+echo Installation complete. Next open 00_START_NEURAL_ROVER.bat.
 pause
 exit /b 0
 :failed

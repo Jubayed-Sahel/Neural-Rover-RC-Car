@@ -1,6 +1,10 @@
 # Neural Rover RC Car
 
-> CSE499B planning: see [CSE499B_PLAN.md](CSE499B_PLAN.md) for the stationary USB-camera fall-detection dashboard and Cloudflare integration. The Arduino firmware remains the working car baseline.
+> CSE499B planning: see [CSE499B_PLAN.md](CSE499B_PLAN.md) for photo enrollment, Tapo face recognition, Telegram alerts, and manual rover control. The Arduino firmware remains the working car baseline.
+
+> **Testing the complete Tapo project:** run `laptop-test/04_CHECK_SETUP.bat`, then follow the [full system test](laptop-test/FACE_START_HERE.md#full-system-test-for-22-november-2026). Use `laptop-test/00_START_NEURAL_ROVER.bat` for the dashboard. The `install in laptop` folder is a legacy ESP32-CAM/CUDA package.
+
+> **Phone control and university demo:** use `laptop-test/13_START_PHONE_REMOTE.bat` for the paired local phone page. Prepare the exact demonstration phone hotspot using the [portable setup guide](laptop-test/TAPO_START_HERE.md#university-demo-using-your-phone-hotspot) before travelling. The camera needs a configured network as well as power.
 
 <p align="center">
   <strong>A Wi-Fi-controlled four-wheel rover with live ESP32-CAM video, pan–tilt control, and fail-safe motor handling.</strong>
@@ -29,7 +33,7 @@ Neural Rover RC Car is a complete CSE499A embedded-systems project built around 
 Both boards join the same 2.4 GHz network. The user drives the rover, views the camera, aims the pan–tilt mount, and adjusts the camera light from one browser page.
 
 > [!IMPORTANT]
-> The final firmware contains tested motor-side and polarity corrections. Follow the pin map in this README or in [`RC_CAR_COMPLETE_INFORMATION.md`](RC_CAR_COMPLETE_INFORMATION.md), not an older circuit label.
+> The final firmware contains tested motor-side and polarity corrections. Follow the pin map in this README and the current [`ESP32_Controller.ino`](Project%20Car%20Code/ESP32_Controller/ESP32_Controller.ino), not an older circuit label or the separate UART motor-receiver sketch.
 
 ## Features
 
@@ -227,17 +231,17 @@ Use one stream viewer at a time for the most stable result.
 ## Repository Structure
 
 ```text
-CSE499/
+Neural-Rover-RC-Car/
 ├── Project Car Code/
 │   ├── ESP32_Controller/          # Final main-controller firmware
-│   ├── ESP32_CAM_Controller/      # Final camera firmware
-│   └── ESP32_Motor_Receiver/      # Earlier UART receiver experiment
-├── Project Files/                 # Diagrams and supporting documentation
-├── IEEE_499A_Report/              # Final five-page IEEE report
-├── install in laptop/             # Optional laptop-side computer-vision tools
-├── RC_CAR_COMPLETE_INFORMATION.md # Complete tested build reference
-├── NEURAL_ROVER.md                # Project concept and development notes
-└── workplan.html                  # CSE499 workplan
+│   └── ESP32_CAM_Controller/      # Final camera firmware
+├── Project Files/                 # Final diagrams and project images
+├── laptop-test/                  # Current Tapo recognition and driving dashboard
+├── Neural_Rover_Group-7_499A_Report.pdf
+├── Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx
+├── CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx
+├── CSE499B_PLAN.md               # Current scope and demonstration plan
+└── README.md
 ```
 
 ## Verified CSE499A Status
@@ -256,9 +260,10 @@ The following project tasks are complete:
 
 ## Documentation
 
-- [Complete working configuration](RC_CAR_COMPLETE_INFORMATION.md)
-- [Project overview and development notes](NEURAL_ROVER.md)
-- [Final IEEE CSE499A report](IEEE_499A_Report/Neural_Rover_IEEE_499A_Report_Final.pdf)
+- [Current dashboard operating guide and full test](laptop-test/FACE_START_HERE.md)
+- [CSE499A report](Neural_Rover_Group-7_499A_Report.pdf)
+- [CSE499A presentation](Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx)
+- [CSE499B smart hazard-inspection proposal](CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx)
 - [Full project diagram](Project%20Files/Neural%20Rover%20Full%20Project%20Diagram.png)
 - [ESP32-CAM upload diagram](Project%20Files/ESP32-CAM%20Code%20Upload%20Diagram.jpeg)
 

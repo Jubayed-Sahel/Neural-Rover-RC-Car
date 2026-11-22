@@ -6,5 +6,5 @@ if not exist ".venv\Scripts\python.exe" (
   pause
   exit /b 1
 )
-".venv\Scripts\python.exe" test_pose.py --check
+".venv\Scripts\python.exe" check_setup.py
 pause

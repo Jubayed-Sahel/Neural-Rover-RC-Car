@@ -32,6 +32,8 @@ tmp/
 *.log
 *.inspect.ndjson
 laptop-test/results/
+laptop-test/camera.local.json
+laptop-test/*.local.json
 /laptop-test-package.zip
 node_modules/
 build_presentation/
