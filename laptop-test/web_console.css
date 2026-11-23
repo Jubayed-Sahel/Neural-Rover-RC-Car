@@ -7,3 +7,24 @@
 .controls .pad button[data-direction].held{background:#087e80;border-color:#065d60;color:#fff;box-shadow:0 0 0 3px #087e8026}
 .controls #padStop{background:#b8323d;border:2px solid #982833;color:#fff;font-weight:750;box-shadow:0 2px 0 #7e2430}
 .controls #padStop:hover{background:#a12b35;color:#fff}
+
+.stats a,.rover-connection>a,.camera-settings-link{color:#096b70;font-size:.8rem;font-weight:650;text-underline-offset:3px}
+.status-indicator{display:flex;align-items:center;gap:8px}
+.status-indicator::before{content:"";width:9px;height:9px;border-radius:50%;background:#788c96;flex:none}
+.status-indicator[data-state=ready]::before{background:#16875e}
+.status-indicator[data-state=pending]::before{background:#b16a16}
+.status-indicator[data-state=offline]::before{background:#aa4047}
+.rover-connection{margin-bottom:18px;padding:14px;background:#f4f7fa;border:1px solid #d3e0e7;border-radius:10px}
+.rover-connection[data-state=ready]{background:#eef8f2;border-color:#bddbc9}
+.rover-connection[data-state=pending]{background:#fff7e8;border-color:#ead9b5}
+.rover-connection form{margin:10px 0 8px}
+.rover-connection label{display:block;margin-bottom:5px;font-size:.8rem;font-weight:650}
+.rover-connection input{min-width:0}
+#controlStatus{margin:0;color:#253f50;font-weight:700;font-size:.94rem}
+.controls .pad button span{font-size:1.15em;line-height:1}
+.controls kbd{background:#edf2f5;border:1px solid #cbd8df;border-radius:4px;padding:1px 4px}
+#phoneDialog #copyPhone{margin-top:10px}
+@media(max-width:650px){
+  .rover-connection .inline{align-items:stretch;flex-direction:column}
+  .stats a{font-size:.74rem}
+}

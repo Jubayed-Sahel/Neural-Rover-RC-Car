@@ -46,6 +46,8 @@ class ESP32Stub(socketserver.StreamRequestHandler):
             elif opcode == 8:
                 self.wfile.write(bytes((0x88,len(data)))+data)
                 return
+            elif opcode == 9 and getattr(self.server, 'reply_to_ping', True):
+                self.wfile.write(bytes((0x8A,len(data)))+data)
 
 
 class ProjectTest(unittest.TestCase):
@@ -115,6 +117,9 @@ class ProjectTest(unittest.TestCase):
             self.assertTrue(wait_for(lambda:'L' in server.commands))
             rover.stop()
             self.assertTrue(wait_for(lambda:server.commands[-1]=='S'))
+            server.reply_to_ping = False
+            self.assertTrue(wait_for(lambda:rover.status.startswith('Connection lost'), timeout=5))
+            self.assertFalse(rover.hold('F'))
         finally:
             rover.close()
             server.shutdown()

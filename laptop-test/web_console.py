@@ -5,10 +5,11 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from http.cookies import SimpleCookie
-from ipaddress import ip_address
+from ipaddress import ip_address, IPv4Address
 import json
 from pathlib import Path
 import secrets
+from tempfile import NamedTemporaryFile
 from threading import Event, RLock, Thread
 import time
 from urllib.parse import urlsplit
@@ -23,7 +24,7 @@ from face_recognition_demo import FaceEngine, identify, read_gallery, read_profi
 from phone_remote import Handler, PhoneRemote, RemoteError, RemoteState, lan_address
 from photo_enrollment import PhotoReview, UploadedPhoto, review_photos, validate_profile
 from rover_app import Monitor
-from rover_control import RoverControl
+from rover_control import LOCAL_NETWORKS, RoverControl
 from rtsp_source import RTSPCamera, load_settings, save_settings
 from telegram_alerts import call_bot, load_alert_settings, send_text
 
@@ -48,7 +49,13 @@ class Console:
         self.mode,self.preview,self.alerts_enabled = 'Balanced',False,False
         self.camera_wanted = False
         self.camera_message = 'Camera stopped'
-        self.rover_address = ''
+        self.rover_path = self.root / 'rover-address.local.json'
+        try:
+            saved_address = json.loads(self.rover_path.read_text(encoding='utf-8'))
+            address = IPv4Address(saved_address if isinstance(saved_address, str) else '')
+            self.rover_address = str(address) if any(address in network for network in LOCAL_NETWORKS) else ''
+        except (OSError, ValueError, TypeError):
+            self.rover_address = ''
         self.profile_fields = {}
         self.events = deque(maxlen=40)
         self.event_counter = 0
@@ -281,11 +288,25 @@ class Console:
         if name == 'rover/connect':
             address = body.get('address','')
             if not isinstance(address,str): raise ValueError('Enter the main ESP32 IPv4 address.')
-            self.state.attach_rover(None)
-            if self.rover: self.rover.close();self.rover=None
-            self.rover = self.rover_factory(address)
-            self.rover_address = address.strip()
-            self.state.attach_rover(self.rover)
+            address = IPv4Address(address.strip())
+            if not any(address in network for network in LOCAL_NETWORKS):
+                raise ValueError('Enter the rover’s local IPv4 address.')
+            address = str(address)
+            with self.lock:
+                if address != self.rover_address:
+                    with NamedTemporaryFile(dir=self.root, encoding='utf-8', mode='w',
+                                            delete=False) as pending:
+                        pending_path = Path(pending.name)
+                        json.dump(address, pending)
+                    try:
+                        pending_path.replace(self.rover_path)
+                    finally:
+                        pending_path.unlink(missing_ok=True)
+                self.state.attach_rover(None)
+                if self.rover: self.rover.close();self.rover=None
+                self.rover = self.rover_factory(address)
+                self.rover_address = address
+                self.state.attach_rover(self.rover)
             self.add_event('rover','Rover connection requested')
             return {'connecting':True}
         if name == 'rover/disconnect':
