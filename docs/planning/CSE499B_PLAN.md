@@ -12,7 +12,7 @@ The chosen portable network is the user's **phone hotspot**. Prepare the exact p
 
 The same hotspot can be brought to university. Initial camera onboarding and model installation must be completed beforehand while online. Check current IP addresses after a move or power cycle. The camera, laptop and ESP32 need local connectivity; Telegram also needs internet. Whether the hotspot phone can simultaneously act as the remote must be rehearsed on that phone. A second phone may be needed for initial onboarding or as a controller.
 
-Bring original power adapters, chargers, a power strip and charged rover batteries. A 20–30 minute cold-start rehearsal with the actual demonstration laptop, hotspot and all devices is still required. Follow the [university hotspot guide](laptop-test/TAPO_START_HERE.md#university-demo-using-your-phone-hotspot). Neither hotspot compatibility nor physical rover stopping has been verified by software tests.
+Bring original power adapters, chargers, a power strip and charged rover batteries. A 20–30 minute cold-start rehearsal with the actual demonstration laptop, hotspot and all devices is still required. Follow the [university hotspot guide](../../laptop-test/TAPO_START_HERE.md#university-demo-using-your-phone-hotspot). Neither hotspot compatibility nor physical rover stopping has been verified by software tests.
 
 ## Run the demonstration
 
@@ -26,6 +26,6 @@ Bring original power adapters, chargers, a power strip and charged rover batteri
 
 Record laptop performance with both camera and recognition active. For each held-out attempt record the expected identity, actual label, lighting and distance. Include unenrolled faces and report false matches and missed matches separately. Validate Telegram on the actual phone and motor behavior on the physical rover. The prototype is not an access-control system and does not perform liveness checks.
 
-See the [operating guide](laptop-test/FACE_START_HERE.md) and [verification notes](laptop-test/VERIFY.md).
+See the [operating guide](../../laptop-test/FACE_START_HERE.md) and [verification notes](../../laptop-test/VERIFY.md).
 
 Follow the operating guide's complete system test for today's integration run. The Tapo C212 remains the chosen camera; no LILYGO setup or replacement firmware is needed.

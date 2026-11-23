@@ -1,4 +1,4 @@
-> Legacy reference: this package targets ESP32-CAM recognition and NVIDIA/CUDA hardware. For the current **Tapo C212 desktop dashboard**, use [laptop-test](../laptop-test/README.md) and its installer. See [the current plan](../CSE499B_PLAN.md). Fall detection is outside the current project.
+> Legacy reference: this package targets ESP32-CAM recognition and NVIDIA/CUDA hardware. For the current **Tapo C212 desktop dashboard**, use [laptop-test](../../laptop-test/README.md) and its installer. See [the current plan](../../docs/planning/CSE499B_PLAN.md). Fall detection is outside the current project.
 
 # Neural Rover laptop face recognition
 

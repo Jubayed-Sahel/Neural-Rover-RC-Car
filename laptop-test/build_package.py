@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parent
 
 def build(root=ROOT, destination=None):
     root = Path(root)
-    destination = Path(destination) if destination else root.parent / "laptop-test-package.zip"
+    destination = Path(destination) if destination else root.parent / "exports" / "laptop-test-package.zip"
+    destination.parent.mkdir(parents=True,exist_ok=True)
     allowed = {".py", ".bat", ".md", ".txt", ".json", ".html", ".css", ".js"}
     excluded = {".venv", "venv", "__pycache__", "results", ".git"}
     members = []

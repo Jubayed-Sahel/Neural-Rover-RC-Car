@@ -1,8 +1,10 @@
 # Neural Rover RC Car
 
-> CSE499B planning: see [CSE499B_PLAN.md](CSE499B_PLAN.md) for photo enrollment, Tapo face recognition, Telegram alerts, and manual rover control. The Arduino firmware remains the working car baseline.
+**Daily start:** double-click `START_ROVER.bat` in this folder. Run `INSTALL_ROVER.bat` once on a new laptop. The dashboard opens at http://127.0.0.1:8765/.
 
-> **Testing the complete Tapo project:** run `laptop-test/04_CHECK_SETUP.bat`, then follow the [full system test](laptop-test/FACE_START_HERE.md#full-system-test-for-22-november-2026). Use `laptop-test/00_START_NEURAL_ROVER.bat` for the dashboard. The `install in laptop` folder is a legacy ESP32-CAM/CUDA package.
+> CSE499B planning: see [CSE499B_PLAN.md](docs/planning/CSE499B_PLAN.md) for photo enrollment, Tapo face recognition, Telegram alerts, and manual rover control. The Arduino firmware remains the working car baseline.
+
+> **Testing the complete Tapo project:** run `laptop-test/04_CHECK_SETUP.bat`, then follow the [full system test](laptop-test/FACE_START_HERE.md#full-system-test-for-22-november-2026). Use `laptop-test/00_START_NEURAL_ROVER.bat` for the dashboard. The `legacy/esp32-cam-recognition` folder is a legacy ESP32-CAM/CUDA package.
 
 > **Phone control and university demo:** use `laptop-test/13_START_PHONE_REMOTE.bat` for the paired local phone page. Prepare the exact demonstration phone hotspot using the [portable setup guide](laptop-test/TAPO_START_HERE.md#university-demo-using-your-phone-hotspot) before travelling. The camera needs a configured network as well as power.
 
@@ -18,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="Project%20Files/Neural%20Rover%20Prototype.png" alt="Neural Rover RC Car prototype" width="900">
+  <img src="assets/Neural%20Rover%20Prototype.png" alt="Neural Rover RC Car prototype" width="900">
 </p>
 
 <p align="center"><em>Final four-wheel Neural Rover prototype with ESP32-CAM, pan-tilt mount, and onboard control electronics.</em></p>
@@ -52,7 +54,7 @@ Both boards join the same 2.4 GHz network. The user drives the rover, views the 
 ## System Architecture
 
 <p align="center">
-  <img src="Project%20Files/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
+  <img src="assets/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
 </p>
 
 ```text
@@ -232,15 +234,22 @@ Use one stream viewer at a time for the most stable result.
 
 ```text
 Neural-Rover-RC-Car/
-├── Project Car Code/
-│   ├── ESP32_Controller/          # Final main-controller firmware
-│   └── ESP32_CAM_Controller/      # Final camera firmware
-├── Project Files/                 # Final diagrams and project images
-├── laptop-test/                  # Current Tapo recognition and driving dashboard
-├── Neural_Rover_Group-7_499A_Report.pdf
-├── Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx
-├── CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx
-├── CSE499B_PLAN.md               # Current scope and demonstration plan
+├── START_ROVER.bat                # Daily start: opens the browser dashboard
+├── INSTALL_ROVER.bat              # One-time setup on a new Windows laptop
+├── CHECK_SETUP.bat                # Offline readiness checks
+├── laptop-test/                   # Working application, private settings and models
+├── Project Car Code/              # Arduino sketches; existing paths retained
+├── assets/                        # Diagrams and project images
+├── docs/
+│   ├── planning/                  # Current scope and work plan
+│   ├── reports/                   # Academic reports
+│   ├── presentations/             # Presentation decks
+│   ├── proposals/                 # Proposal documents
+│   ├── hardware/                  # Wiring and upload documentation
+│   └── reviews/                   # Historical technical reviews
+├── legacy/esp32-cam-recognition/  # Previous ESP32-CAM/CUDA software
+├── exports/                       # Generated shareable packages (ignored)
+├── diagnostics/                   # Local troubleshooting logs (ignored)
 └── README.md
 ```
 
@@ -261,11 +270,11 @@ The following project tasks are complete:
 ## Documentation
 
 - [Current dashboard operating guide and full test](laptop-test/FACE_START_HERE.md)
-- [CSE499A report](Neural_Rover_Group-7_499A_Report.pdf)
-- [CSE499A presentation](Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx)
-- [CSE499B smart hazard-inspection proposal](CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx)
-- [Full project diagram](Project%20Files/Neural%20Rover%20Full%20Project%20Diagram.png)
-- [ESP32-CAM upload diagram](Project%20Files/ESP32-CAM%20Code%20Upload%20Diagram.jpeg)
+- [CSE499A report](docs/reports/Neural_Rover_Group-7_499A_Report.pdf)
+- [CSE499A presentation](docs/presentations/Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx)
+- [CSE499B smart hazard-inspection proposal](docs/proposals/CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx)
+- [Full project diagram](assets/Neural%20Rover%20Full%20Project%20Diagram.png)
+- [ESP32-CAM upload diagram](assets/ESP32-CAM%20Code%20Upload%20Diagram.jpeg)
 
 ## Troubleshooting
 
