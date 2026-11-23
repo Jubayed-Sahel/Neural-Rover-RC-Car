@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | Tapo camera | On Phone 2, open Tapo **Device Info**. In Phone 1's CAR client list, look for MAC `b8:fb:b3:52:e4:9a`. Last verified at `192.168.89.54`. | **Devices & network → Tapo camera** |
 | Demo laptop | Click **Connect phone** in the dashboard, or run `ipconfig` and read **Wireless LAN adapter Wi-Fi → IPv4 Address**. Last verified at `192.168.89.30`. | On Phone 2, open the displayed remote address including port `8765` and enter the pairing code. |
-| Main ESP32 | On Phone 1, compare the **CAR** connected-device list before and after powering the main ESP32, or read the address from its serial output. Its IP is still unverified. | **Devices & network → Main ESP32** or the ESP32 field in **Mission control** |
+| Main ESP32 | Phone 1 shows MAC addresses only. The main ESP32 MAC is `8C-94-DF-90-79-A8`, last verified at `192.168.89.176`. While on CAR, run `Get-NetNeighbor -InterfaceAlias Wi-Fi -AddressFamily IPv4 \| Where-Object LinkLayerAddress -eq '8C-94-DF-90-79-A8'` in PowerShell, or read the ESP32 serial output if the neighbor entry is missing. | **Devices & network → Main ESP32** or the ESP32 field in **Mission control** |
 
 Recheck the addresses after restarting the hotspot or reconnecting a device. On the laptop itself, always open the dashboard at `127.0.0.1:8765`.
 
@@ -25,7 +25,7 @@ Recheck the addresses after restarting the hotspot or reconnecting a device. On 
 
 ## Next rehearsal: dashboard driving
 
-1. Raise the drive wheels. Enter the verified main ESP32 address and click **Connect rover**. Wait for **Connected**.
+1. Raise the drive wheels. Click **Connect** beside the saved address in **Mission control**. Wait for **Connected**. If the address changed, enter its current IP and connect again to save it locally.
 2. Under **Mission control → Manual driving**, briefly hold a direction and release. Verify the wheels stop on release, then check **STOP** and **Escape** before a floor test.
 3. If connection fails, check the controller's power and current CAR address. For optional phone driving, pair Phone 2 after verifying laptop control.
 
@@ -39,5 +39,5 @@ Recheck the addresses after restarting the hotspot or reconnecting a device. On 
 ## Handoff status as of 23 November 2026
 
 - Verified on the demo laptop: dashboard, cached face model initialization, and live Tapo preview over CAR with Phone 1 mobile data off.
-- Pending: identify the main ESP32, verify driving and stopping, check phone pairing if needed, and confirm Telegram delivery over CAR mobile data.
+- The main ESP32 was identified and dashboard driving worked. Check stopping during rehearsal, verify phone pairing if needed, and confirm Telegram delivery over CAR mobile data.
 - Keep camera credentials, pairing codes, bot tokens, and face templates on the devices. Local settings files are excluded from Git.
