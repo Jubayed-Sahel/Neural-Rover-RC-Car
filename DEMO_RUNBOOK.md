@@ -18,15 +18,15 @@ Recheck the addresses after restarting the hotspot or reconnecting a device. On 
 
 ## Verify the Tapo feed
 
-1. In **Mission control**, select **Camera preview → Start / apply**. Look for **LIVE**. The demo camera uses **stream1**, verified at **1920 × 1080**. Try **stream2** if video stutters.
+1. In **Mission control**, select **Camera preview → Start camera**. Look for **LIVE**. The demo camera uses **stream1**, verified at **1920 × 1080**. Try **stream2** if video stutters.
 2. If the IP changed, update it under **Devices & network**. Leave the password field blank to keep the saved password.
 3. If the laptop reports **401 Unauthorized** while Phone 2 can see video, check **Tapo → Device Settings → Advanced Settings → Camera Account**. Save the exact local camera username and password in the dashboard. If RTSP port **554** refuses connections, verify the IP and check that the Camera Account is set up.
-4. For recognition, enroll consenting participants in **People library**, select **Face recognition → Start / apply**, and verify the intended profile appears before enabling alerts.
+4. For recognition, enroll consenting participants in **People library**, select **Face recognition → Start camera**, and verify the intended profile appears before enabling alerts.
 
 ## Next rehearsal: dashboard driving
 
 1. Raise the drive wheels. Click **Connect** beside the saved address in **Mission control**. Wait for **Connected**. If the address changed, enter its current IP and connect again to save it locally.
-2. Under **Mission control → Manual driving**, briefly hold a direction and release. Verify the wheels stop on release, then check **STOP** and **Escape** before a floor test.
+2. Under **Mission control → Drive the rover**, briefly hold a direction and release. Verify the wheels stop on release, then check **STOP** and **Escape** before a floor test.
 3. If connection fails, check the controller's power and current CAR address. For optional phone driving, pair Phone 2 after verifying laptop control.
 
 ## Last rehearsal: Telegram through Phone 1
