@@ -1,18 +1,42 @@
-# Verification status
+# Verification — 22 November 2026
 
-Automated checks here verify software behavior, not human fall-detection accuracy.
+## Paired phone remote and portability preparation
 
-- Seven temporal rule tests cover a fall-like transition, single latched event, sitting, tracking loss, long gaps, already-horizontal startup posture, recovery from a short transition, and acknowledgement reset.
-- The package is designed for Python 3.12 x64 on Windows with a private CPU environment.
-- Actual ASUS laptop performance, live-camera tracking, and held-out fall accuracy must be measured by running the package on that laptop.
+- All **52 automated tests** passed after the phone-remote changes. The added coverage includes pairing/authentication, rate limiting, cross-origin rejection, JPEG transport, ordered command handling, short movement leases, control timeout, delayed-input rejection, and phone commands reaching a real localhost WebSocket test server. No physical rover is contacted by these tests.
+- Per the user's requirement, video and driving are independent. Tests verify movement can start with no video and continue through stopped/stale video while control input is renewed. A control connection failure, explicit stop, lost input or expired session still stops movement. Starting the phone service can find a laptop address without camera configuration, and a camera encoding error does not block the control service.
+- A browser check at 390 × 844 used fixture video and a **simulated rover**. Pairing and hold/release produced Forward then Stop. After video was removed, Left then Stop still reached the simulated rover. The test screenshot in private results documents this behavior. This is not a physical-car or actual-phone network test.
+- The optional phone service is off in the normal desktop launcher and can be started with `13_START_PHONE_REMOTE.bat` or the Phone remote tab. It is a paired local HTTP page on port 8765; no ESP32 firmware changes, public hosting or cloud tunnel are introduced. The laptop serves one existing processed camera output and relays allowed manual directions to the connected main ESP32.
+- The latest source includes the independent-driving behavior. Restart the app after updating files; a process started before the change continues running its previously loaded code. The refreshed package includes the HTML phone page and its supporting source/tests, and excludes local secrets, enrolled templates, model weights and private results.
+- The user selected a **phone hotspot** for the university demonstration. A portable onboarding, power, IP-address and cold-start checklist is in the Tapo guide. The actual hotspot, its same-phone browser access/client routing, the demonstration laptop's sustained performance and physical stopping remain **unverified**. No hotspot, camera Wi-Fi, router, Windows firewall or campus network settings were changed during this preparation.
 
-Packaging checks passed on Windows with Python 3.12.10:
+## Live test after the camera was powered on
 
-- Installed dependencies; `pip check` reports no broken requirements.
-- CPU-only model initialized and completed inference on a blank frame.
-- A two-second synthetic blank video completed the headless recorded-video path and generated metrics, summary, and events files with no pose or fall alerts.
-- Seven temporal logic tests passed.
+- Both Tapo streams were tested for 20 seconds sequentially. Stream2 delivered 640 × 360 at an estimated 15.02 capture fps; stream1 delivered 1920 × 1080 at about 25.77 fps. Both connected on the first attempt with no reconnects or expired analysis results during these short tests. The live camera setting was changed to stream1, preserving the previous configuration in a private local backup. This is a short operational check, not a sustained reliability benchmark.
+- The initial live view produced many dark-face quality rejections. The quality gates were kept. With the participant's supplied display name, three clear, distinct live templates were enrolled locally. The first unsuccessful attempt saved nothing. The old version-1 gallery was preserved as `faces.legacy.local.json`; the active gallery is now version 2 with one profile and three templates. No enrollment photographs were written to disk.
+- A subsequent 15-second test on fresh stream1 frames produced known candidates in all 45 sampled analyses. The desktop dashboard then visibly showed the confirmed match and the role entered in its form. These observations use the same participant and session; no held-out identity accuracy, unknown-person false-match rate, or liveness capability is established.
+- Telegram `getMe` and `getChat` read-only requests verified the saved bot token and configured private chat. No real Telegram messages were sent. The live dashboard was left in recognition mode with Telegram sending disabled and the rover disconnected.
+- A read-only request to the main controller's `rover.local` address did not reach the controller from this PC. Its numerical IP may still work. No rover WebSocket connection or motor commands were sent, and physical stopping remains untested.
+- All 37 automated tests passed after adding the optional live camera diagnostic and live enrollment helper. The additional tests cover anonymous diagnostic output, expired-result rejection, camera cleanup, distinct-view collection, reconnection resets, and rejection of poor enrollment views. Aggregate live metrics are in the private `results/` folder. They contain no camera images, embeddings, matched names, authenticated URLs, or credentials.
 
-The blank video validates execution and logging only. It does not validate pose accuracy, fall accuracy, live-camera behavior, or the user's laptop speed.
+## Earlier software preparation
 
-Official model bundle SHA256: `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`. The installer checks this value. Model source is documented in README.md.
+- 31 automated tests passed. Coverage includes RTSP retries/stale frames, photo quality and mixed-identity rejection, template storage/migration, temporal identity confirmation, camera settings validation, the current alert-gallery format, simulated Telegram success/failure and cooldown, an integrated simulated recognition/alert worker, and STOP/movement lease/disconnect against a localhost WebSocket server. Telegram test senders are mocks; their console output does not indicate a real message was sent.
+- `pip check` found no broken requirements. Installed Python packages match `requirements-lock.txt`.
+- `04_CHECK_SETUP.bat` now checks Python, package versions, folder access, both cached model hashes, detector inference, model initialization, the desktop UI, current profile readiness, Tapo configuration and optional Telegram configuration. It does not open devices or send messages, and never downloads weights. Missing models are a FAIL with instructions to run the installer while online.
+- The current PC passed the software checks. Local Tapo and private Telegram configuration files exist and validate; this does not establish connectivity or phone delivery. The current gallery is legacy SFace and must be re-enrolled. A current profile must then be marked for alerts.
+- Actual ArcFace/YuNet inference passed seven public-fixture smoke cases: enrollment-photo recognition, a brightness-adjusted version, 90/180/270-degree rotations, an empty image and an unenrolled fixture producing no known name. The unenrolled fixture was rejected by the face-quality gate, so that case does not measure identity discrimination. These are functional checks, not held-out camera accuracy results. No real gallery or camera frames were used or modified.
+- The existing `ESP32_Controller.ino` compiled with Espressif ESP32 core 3.3.11, AsyncTCP 3.5.0 and ESP Async WebServer 3.11.2 for `esp32:esp32:esp32:PartitionScheme=huge_app`. Flash use: 1,002,678 bytes of 3,145,728; static RAM: 48,936 bytes of 327,680. Compilation does not verify physical wiring or stopping. No firmware was uploaded or changed.
+- The dashboard now has scrollable People controls for smaller laptop windows, a scrollable photo report, Escape-to-stop, explicit Disconnect rover, and visible Telegram delivery status. Camera settings save atomically after validation. The alert-selection launcher accepts current version-2 galleries, and the recognition shortcut opens the common desktop dashboard.
+- A visual check at a 1000 × 650 content size confirmed profile-pane scrolling, access to the lower controls, the rover-control tab and the complete Tapo setup dialog. The preview used isolated empty settings and was closed afterwards; no user profiles or device configurations were changed.
+- The laptop ZIP was rebuilt and checked for integrity and exclusion of credentials, profiles, results, virtual environments and model weights. A fresh computer must run the installer with internet and configure its own local devices.
+- At this preparation stage, the actual Tapo connection, phone delivery, physical rover, network-loss stopping and sustained all-device run remained for the full system test. The later live-camera results above supersede the camera/profile limitations. Follow the [operating guide](FACE_START_HERE.md#full-system-test-for-22-november-2026), starting with the wheels raised. No remote dashboard is exposed.
+
+## Earlier verification — 9 November 2026
+
+- 14 automated tests passed. They cover RTSP retries and stale frames, rejection of invalid enrollment photos, profile storage and migration backup, unknown identity, simulated Telegram cooldown, private packaging, and the rover's short movement lease and STOP over a real localhost WebSocket connection.
+- The Windows desktop app and both face models initialized without contacting any devices.
+- A test with OpenCV sample photos ran the actual import and model pipeline. The enrolled fixture matched and a different fixture was rejected. This is a functional smoke test, not an accuracy measurement.
+- The dashboard's recognition worker received video from the actual Tapo C212 on the local network with Telegram disabled. No frames or biometric records from the live stream were saved during the test.
+- The current PC had a legacy SFace gallery. Re-enroll with photos in the dashboard. The first save backs up the old gallery locally.
+- No live Telegram message was sent during verification. Use the test launcher to verify phone delivery. The physical rover and demonstration laptop still need their own checks; follow the operating guide with the rover's wheels raised first.
+- No firmware was modified, and the build does not expose a remote browser endpoint.

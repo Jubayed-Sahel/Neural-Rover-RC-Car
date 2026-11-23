@@ -1,0 +1,7 @@
+# Preserve academic documents and media byte-for-byte on Windows.
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.png binary
+*.jpg binary
+*.jpeg binary

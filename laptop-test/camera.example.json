@@ -1,0 +1,11 @@
+{
+  "host": "192.168.1.100",
+  "username": "REPLACE_LOCAL_CAMERA_USERNAME",
+  "password": "REPLACE_LOCAL_CAMERA_PASSWORD",
+  "stream": "stream2",
+  "port": 554,
+  "timeout_ms": 4000,
+  "max_attempts": 5,
+  "retry_seconds": 2,
+  "stale_seconds": 2
+}

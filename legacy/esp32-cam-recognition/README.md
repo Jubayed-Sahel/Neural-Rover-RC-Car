@@ -1,4 +1,4 @@
-> Legacy reference: this package targets ESP32-CAM face recognition and NVIDIA/CUDA hardware. It is not the new USB-camera fall-detection setup and should not be used to install dependencies on the Intel Arc desktop or current CPU test environment on the demonstration laptop. See ../CSE499B_PLAN.md for the current plan.
+> Legacy reference: this package targets ESP32-CAM recognition and NVIDIA/CUDA hardware. For the current **Tapo C212 desktop dashboard**, use [laptop-test](../../laptop-test/README.md) and its installer. See [the current plan](../../docs/planning/CSE499B_PLAN.md). Fall detection is outside the current project.
 
 # Neural Rover laptop face recognition
 

@@ -1,6 +1,12 @@
 # Neural Rover RC Car
 
-> CSE499B planning: see [CSE499B_PLAN.md](CSE499B_PLAN.md) for the stationary USB-camera fall-detection dashboard and Cloudflare integration. The Arduino firmware remains the working car baseline.
+**Daily start:** double-click `START_ROVER.bat` in this folder. Run `INSTALL_ROVER.bat` once on a new laptop. The dashboard opens at http://127.0.0.1:8765/.
+
+> CSE499B planning: see [CSE499B_PLAN.md](docs/planning/CSE499B_PLAN.md) for photo enrollment, Tapo face recognition, Telegram alerts, and manual rover control. The Arduino firmware remains the working car baseline.
+
+> **Testing the complete Tapo project:** run `laptop-test/04_CHECK_SETUP.bat`, then follow the [full system test](laptop-test/FACE_START_HERE.md#full-system-test-for-22-november-2026). Use `laptop-test/00_START_NEURAL_ROVER.bat` for the dashboard. The `legacy/esp32-cam-recognition` folder is a legacy ESP32-CAM/CUDA package.
+
+> **Phone control and university demo:** use `laptop-test/13_START_PHONE_REMOTE.bat` for the paired local phone page. Prepare the exact demonstration phone hotspot using the [portable setup guide](laptop-test/TAPO_START_HERE.md#university-demo-using-your-phone-hotspot) before travelling. The camera needs a configured network as well as power.
 
 <p align="center">
   <strong>A Wi-Fi-controlled four-wheel rover with live ESP32-CAM video, pan–tilt control, and fail-safe motor handling.</strong>
@@ -14,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="Project%20Files/Neural%20Rover%20Prototype.png" alt="Neural Rover RC Car prototype" width="900">
+  <img src="assets/Neural%20Rover%20Prototype.png" alt="Neural Rover RC Car prototype" width="900">
 </p>
 
 <p align="center"><em>Final four-wheel Neural Rover prototype with ESP32-CAM, pan-tilt mount, and onboard control electronics.</em></p>
@@ -29,7 +35,7 @@ Neural Rover RC Car is a complete CSE499A embedded-systems project built around 
 Both boards join the same 2.4 GHz network. The user drives the rover, views the camera, aims the pan–tilt mount, and adjusts the camera light from one browser page.
 
 > [!IMPORTANT]
-> The final firmware contains tested motor-side and polarity corrections. Follow the pin map in this README or in [`RC_CAR_COMPLETE_INFORMATION.md`](RC_CAR_COMPLETE_INFORMATION.md), not an older circuit label.
+> The final firmware contains tested motor-side and polarity corrections. Follow the pin map in this README and the current [`ESP32_Controller.ino`](Project%20Car%20Code/ESP32_Controller/ESP32_Controller.ino), not an older circuit label or the separate UART motor-receiver sketch.
 
 ## Features
 
@@ -48,7 +54,7 @@ Both boards join the same 2.4 GHz network. The user drives the rover, views the 
 ## System Architecture
 
 <p align="center">
-  <img src="Project%20Files/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
+  <img src="assets/Neural%20Rover%20Architecture%20Premium.png" alt="Neural Rover system architecture" width="900">
 </p>
 
 ```text
@@ -227,17 +233,24 @@ Use one stream viewer at a time for the most stable result.
 ## Repository Structure
 
 ```text
-CSE499/
-├── Project Car Code/
-│   ├── ESP32_Controller/          # Final main-controller firmware
-│   ├── ESP32_CAM_Controller/      # Final camera firmware
-│   └── ESP32_Motor_Receiver/      # Earlier UART receiver experiment
-├── Project Files/                 # Diagrams and supporting documentation
-├── IEEE_499A_Report/              # Final five-page IEEE report
-├── install in laptop/             # Optional laptop-side computer-vision tools
-├── RC_CAR_COMPLETE_INFORMATION.md # Complete tested build reference
-├── NEURAL_ROVER.md                # Project concept and development notes
-└── workplan.html                  # CSE499 workplan
+Neural-Rover-RC-Car/
+├── START_ROVER.bat                # Daily start: opens the browser dashboard
+├── INSTALL_ROVER.bat              # One-time setup on a new Windows laptop
+├── CHECK_SETUP.bat                # Offline readiness checks
+├── laptop-test/                   # Working application, private settings and models
+├── Project Car Code/              # Arduino sketches; existing paths retained
+├── assets/                        # Diagrams and project images
+├── docs/
+│   ├── planning/                  # Current scope and work plan
+│   ├── reports/                   # Academic reports
+│   ├── presentations/             # Presentation decks
+│   ├── proposals/                 # Proposal documents
+│   ├── hardware/                  # Wiring and upload documentation
+│   └── reviews/                   # Historical technical reviews
+├── legacy/esp32-cam-recognition/  # Previous ESP32-CAM/CUDA software
+├── exports/                       # Generated shareable packages (ignored)
+├── diagnostics/                   # Local troubleshooting logs (ignored)
+└── README.md
 ```
 
 ## Verified CSE499A Status
@@ -256,11 +269,12 @@ The following project tasks are complete:
 
 ## Documentation
 
-- [Complete working configuration](RC_CAR_COMPLETE_INFORMATION.md)
-- [Project overview and development notes](NEURAL_ROVER.md)
-- [Final IEEE CSE499A report](IEEE_499A_Report/Neural_Rover_IEEE_499A_Report_Final.pdf)
-- [Full project diagram](Project%20Files/Neural%20Rover%20Full%20Project%20Diagram.png)
-- [ESP32-CAM upload diagram](Project%20Files/ESP32-CAM%20Code%20Upload%20Diagram.jpeg)
+- [Current dashboard operating guide and full test](laptop-test/FACE_START_HERE.md)
+- [CSE499A report](docs/reports/Neural_Rover_Group-7_499A_Report.pdf)
+- [CSE499A presentation](docs/presentations/Neural_Rover_CSE499A_Final_Presentation1207_Diagram_Updated.pptx)
+- [CSE499B smart hazard-inspection proposal](docs/proposals/CSE499B_Smart_Hazard_Inspection_Rover_Proposal.docx)
+- [Full project diagram](assets/Neural%20Rover%20Full%20Project%20Diagram.png)
+- [ESP32-CAM upload diagram](assets/ESP32-CAM%20Code%20Upload%20Diagram.jpeg)
 
 ## Troubleshooting
 

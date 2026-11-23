@@ -24,14 +24,16 @@ env/
 # Local AI models and generated recognition data
 *.onnx
 *.engine
-install in laptop/known_faces/*
-!install in laptop/known_faces/README.txt
+legacy/esp32-cam-recognition/known_faces/*
+!legacy/esp32-cam-recognition/known_faces/README.txt
 
 # Local temporary output
 tmp/
 *.log
 *.inspect.ndjson
 laptop-test/results/
+laptop-test/camera.local.json
+laptop-test/*.local.json
 /laptop-test-package.zip
 node_modules/
 build_presentation/
@@ -39,3 +41,7 @@ output/
 
 # Superseded root-level export (final report lives in IEEE_499A_Report/)
 /Neural_Rover_IEEE_499A_Report_Revised.pdf
+
+# Generated packages and local network diagnostics
+/exports/
+/diagnostics/

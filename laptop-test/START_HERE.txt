@@ -1,18 +1,37 @@
-CSE499B LAPTOP TEST
+NEURAL ROVER — FACE RECOGNITION
 
-We are testing body-pose tracking, processing speed, memory use, and false alarms.
-This is not just a webcam test, and it is not yet a validated fall detector.
+01_INSTALL.bat              Install dependencies and check models.
+04_CHECK_SETUP.bat          Check software, models and local setup offline.
+05_CONFIGURE_TAPO.bat       Configure Tapo (also available in the dashboard).
+07_ENROLL_FROM_CAMERA.bat  Enroll three clear live views if you have no photos.
+00_START_NEURAL_ROVER.bat   Open the desktop dashboard.
+13_START_PHONE_REMOTE.bat  Open the dashboard with paired local phone control.
 
-1. Extract/copy this whole folder to your ASUS laptop.
-2. Install 64-bit Python 3.12 with the Python launcher.
-3. Double-click 01_INSTALL.bat while connected to the internet.
-4. Double-click 02_TEST_LIVE.bat.
-5. Keep your whole body visible. Test ordinary movements for five minutes.
-6. Press Q to finish. Send back the newest results folder's summary.json.
+In People, enter name/ID/role, Choose & check photos, review, then Save.
+Re-enroll any old SFace profiles. Use Add photos to improve a current profile.
+For live enrollment, stop the dashboard camera and restart the app afterwards.
+Start with Preview only to test the camera, then turn it off for recognition.
+In Rover controls, enter the MAIN ESP32 IP, Connect, and hold to drive.
+Release, STOP or Escape stops. Test with the wheels raised first.
+All devices must share a reachable network. Current controller expects CAR.
+Video failure does not disable phone driving. The control link must still work.
 
-Q = quit | A = acknowledge/reset experimental alert | S = snapshot
+UNIVERSITY DEMO: use the exact phone hotspot tested at home, on 2.4 GHz.
+Join Tapo, laptop and ESP32 to it before demo day; power alone is not enough.
+After restarting the hotspot, check camera/ESP32 IPs and the laptop page address.
+Bring the original camera adapter, chargers, power strip and rover batteries.
+See TAPO_START_HERE.md for hotspot setup and the cold-start rehearsal.
 
-For recorded clips, drag an MP4/AVI onto 03_TEST_VIDEO.bat.
-Do not perform a dangerous fall for testing.
+10_CONFIGURE_TELEGRAM.bat   Pair your own private Telegram chat (optional).
+11_TEST_TELEGRAM.bat        Send yourself one test notification (optional).
 
-Read README.md for configuration, results, and limitations.
+See FACE_START_HERE.md for the full operating guide.
+Follow its Full system test sequence for today's complete hardware test.
+Do not share files ending in .local.json.
+DAILY START: Double-click 00_START_NEURAL_ROVER.bat.
+It opens the new browser workspace at http://127.0.0.1:8765/.
+Camera, people, live enrollment, photo tests, ESP32 controls, phone pairing,
+Telegram and demo readiness are all available there. No manual scripts needed.
+On a new laptop, run 01_INSTALL.bat once with internet first.
+Use Shut down workspace to stop the backend. Keep the laptop awake during use.
+The older desktop/numbered-script instructions below are troubleshooting tools.
