@@ -2,6 +2,8 @@
 
 **Daily start:** double-click `START_ROVER.bat` in this folder. Run `INSTALL_ROVER.bat` once on a new laptop. The dashboard opens at http://127.0.0.1:8765/.
 
+[Final demo runbook](DEMO_RUNBOOK.md) covers this laptop, the CAR hotspot, and the driving and Telegram checks.
+
 > CSE499B planning: see [CSE499B_PLAN.md](docs/planning/CSE499B_PLAN.md) for photo enrollment, Tapo face recognition, Telegram alerts, and manual rover control. The Arduino firmware remains the working car baseline.
 
 > **Testing the complete Tapo project:** run `laptop-test/04_CHECK_SETUP.bat`, then follow the [full system test](laptop-test/FACE_START_HERE.md#full-system-test-for-22-november-2026). Use `laptop-test/00_START_NEURAL_ROVER.bat` for the dashboard. The `legacy/esp32-cam-recognition` folder is a legacy ESP32-CAM/CUDA package.
